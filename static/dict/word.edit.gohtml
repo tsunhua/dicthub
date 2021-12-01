@@ -1,0 +1,136 @@
+{{ define "word.edit"}}
+    {{ $hasPermission := .HasPermission }}
+    {{ $completions := .Completions}}
+    {{ $word := .Word}}
+    <!DOCTYPE html>
+    <html>
+    {{ template "head" "編輯條目｜典合網"}}
+    <body>
+    {{ if $hasPermission}}
+    <form class="content" id="editWordForm">
+        <div class="title-sub mb-2">編輯條目</div>
+        <div style="display: none">
+            <input type="text" name="id" value="{{$word.Id}}">
+        </div>
+
+         <div class="mb-3">
+            <label for="dictIdDiv" class="form-label">辭書</label>
+            <div id="dictIdDiv"><a href="/dicts/{{$word.Dict.Id}}">{{$word.Dict.Name}}</a>({{$word.Dict.Id}})</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="writingInput" class="form-label">條目</label>
+            <input type="text" class="form-control" id="writingInput" name="writing" value="{{$word.Writing}}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="catalogInput" class="form-label">分類</label>
+            <div id="catalogInput">
+                <select class="custom-select" name="catalogLinkId" style="max-width: 220px">
+                    <option value="">請選擇</option>
+                    {{ range $word.Dict.CatalogTree}}
+                        {{if not .IsLastLevel}}
+                        {{else if gt (len $word.CatalogLinkIds) 0}}
+                            {{if eq .LinkId (last $word.CatalogLinkIds)}}
+                                <option value="{{.LinkId}}" selected>{{.LinkName}}</option>
+                            {{else}}
+                                <option value="{{.LinkId}}">{{.LinkName}}</option>
+                            {{end}}
+                        {{ else }}
+                            <option value="{{.LinkId}}">{{.LinkName}}</option>
+                        {{end}}
+                    {{end}}
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="specsInput" class="form-label">屬性</label>
+            <div id="specsInput">
+                {{ range $index, $spec := $word.Specs}}
+                    <div class="input-group mb-2">
+                        <select class="custom-select" name="linkId" style="max-width: 220px">
+                            <option value="">請選擇</option>
+                            {{ range $word.Dict.SpecTree}}
+                                {{if not .IsLastLevel}}
+                                {{else if eq $spec.LinkId .LinkId}}
+                                    <option value="{{.LinkId}}" selected>{{.LinkName}}</option>
+                                {{ else }}
+                                    <option value="{{.LinkId}}">{{.LinkName}}</option>
+                                {{end}}
+                            {{end}}
+                        </select>
+                        <input type="text" class="form-control" id="specInput" name="value"
+                               value="{{$spec.Value}}" placeholder="屬性值">
+                        <input type="text" class="form-control" id="noteInput" name="note"
+                               value="{{$spec.Note}}" placeholder="備註" style="max-width: 100px"
+                               data-toggle="tooltip" data-placement="bottom" title="備註信息">
+                        <div class="input-group-append">
+                            {{if eq $index 0}}
+                                <button class="btn btn-outline-secondary" type="button"
+                                        onclick="this.parentElement.parentElement.remove()">移除
+                                </button>
+                            {{else}}
+                                <button class="btn btn-outline-secondary" type="button"
+                                        onclick="this.parentElement.parentElement.remove()">移除
+                                </button>
+                            {{end}}
+                        </div>
+                    </div>
+                {{end}}
+            </div>
+            <div class="mt-2">
+                <button id="addSpecBtn" class="btn btn-outline-secondary" type="button">新增一項屬性</button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="meaningInput" class="form-label">描述<span class="small text-info">（支持<a
+                            href="https://gist.github.com/billy3321/1001749662c370887c63bb30f26c9e6e">Markdown</a>）</span></label>
+            <textarea class="form-control" id="meaningInput" rows="5" name="meaning">{{$word.MeaningRaw}}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="completionDiv" class="form-label">完善程度</label>
+            <div id="completionDiv">
+                {{ range $index,$item := $completions}}
+                    <div class="form-check form-check-inline">
+                        {{ if eq $word.Completion.Value $item.Value }}
+                            <input class="form-check-input" type="radio" id="completionInput{{$index}}"
+                                   name="completion"
+                                   value="{{ $item.Value }}" checked>
+                        {{ else }}
+                            <input class="form-check-input" type="radio" id="completionInput{{$index}}"
+                                   name="completion"
+                                   value="{{ $item.Value }}">
+                        {{ end }}
+                        <label class="form-check-label" for="completionInput{{$index}}">{{ $item.Name }}</label>
+                    </div>
+                {{ end }}
+            </div>
+        </div>
+
+        <div>
+            <button id="submitBtn" type="submit" class="btn btn-primary d-inline-block">更新</button>
+            <div class="d-inline-block ml-2 small" style="color: #17a2b8" id="submitTip"></div>
+        </div>
+    </form>
+    {{else}}
+        <script type="text/javascript">
+           window.onload = function () {
+                window.location.href = "/login"
+                alert("請先登入系統再進行後續操作")
+            }
+        </script>
+    {{end}}
+    {{ template "title"}}
+    {{ template "footer"}}
+    <script>
+        $('#submitBtn').on('click', updateWord)
+        $('#addSpecBtn').on('click', function () {
+            $('#specsInput').append( $('#specsInput').children("div").last()[0].cloneNode(true) )
+        })
+    </script>
+    </body>
+    </html>
+{{ end }}

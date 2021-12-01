@@ -1,0 +1,51 @@
+{{ define "login"}}
+    <!DOCTYPE html>
+    <html>
+    {{ template "head" "User | login"}}
+    <body>
+    <div class="content">
+        <div class="title-sub">🔒 登入系統</div>
+        <form id="loginForm" method="post" action="/api/login" target="hide_iframe">
+            <div class="mb-3">
+                <label for="emailInput" class="form-label">郵箱</label>
+                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" name="email">
+            </div>
+            <div class="mb-3">
+                <label for="passwordInput" class="form-label">密碼</label>
+                <input type="password" class="form-control" id="passwordInput" name="password">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary d-inline-block">登入</button>
+            </div>
+        </form>
+        <iframe name="hide_iframe" style="display:none;"></iframe>
+    </div>
+    {{ template "title"}}
+    {{ template "footer"}}
+    <script>
+        const form = $('#loginForm')
+        form.submit(function (event) {
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function () {
+                    alert("登入成功，將自動跳轉原先頁面")
+                    const lastPage = $.trim(document.referrer)
+                    if (lastPage) {
+                        window.location.href = lastPage
+                    } else {
+                        window.location.href = "/"
+                    }
+                },
+                error: function () {
+                    alert("郵箱或密碼錯誤，請檢查後重試")
+                }
+            });
+            event.preventDefault()
+            this.reset()
+        });
+    </script>
+    </body>
+    </html>
+{{ end }}

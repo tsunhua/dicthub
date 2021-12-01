@@ -1,0 +1,56 @@
+{{ define "word"}}
+    {{ $words := .Words}}
+    <!DOCTYPE html>
+    <html>
+    {{ $first := index $words 0}}
+    {{ $title := list $first.Writing "典合網" | join "｜" }}
+    {{ template "head" $title}}
+    <body>
+    <script>
+    </script>
+    <div>
+        {{ if $words }}
+            <div style="margin-bottom: 58px">
+             {{ range $index, $word := $words}}
+                <div class="mb-1 content">
+                    <div class="mb-2 small">
+                        <span class="bread"><a href="/dicts/{{$word.Dict.Id}}">{{$word.Dict.Name}}</a></span>
+                        {{ range $word.Catalogs}}
+                            <span class="bread">/&nbsp;<a href="/dicts/{{$word.Dict.Id}}/{{.LinkId}}">{{.Name}}</a></span>
+                        {{ end }}
+                    </div>
+                    <div>
+                        <span class="title-item">{{ $word.Writing }}</span>
+                        {{if $word.SourceUrl}}
+                            <span class="small">[<a href="{{$word.SourceUrl}}">來源</a>]</span>
+                        {{end}}
+                        <span class="small">[<a href="/editor/word?dictId={{$word.Dict.Id}}&wordId={{$word.Id}}">編輯</a>]</span>
+                        {{ if $word.Specs}}
+                            <div class="mt-2">
+                                {{ range $index,$spec :=  $word.Specs }}
+                                    <div class="small">
+                                        <span>{{ $spec.LinkName }}:&nbsp;</span>
+                                        <span style="color: gray">/{{ $spec.Value }}/</span>
+                                        {{if eq $spec.Note ""}}
+                                        {{else}}
+                                            <span style="color: gray;">({{$spec.Note}})</span>
+                                        {{end}}
+                                    </div>
+                                {{ end }}
+                            </div>
+                        {{end}}
+                    </div>
+                    <hr/>
+                    <div style="white-space: pre-wrap;">{{ $word.Meaning }}</div>
+                </div>
+            {{end}}
+            </div>
+        {{else}}
+            <div class="content">暫無此條目</div>
+        {{end}}
+    </div>
+    {{ template "title"}}
+    {{ template "footer"}}
+    </body>
+    </html>
+{{ end }}

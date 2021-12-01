@@ -1,0 +1,18 @@
+{{ define "dict.list" }}
+    {{ $dicts :=. }}
+    <div class="mt-2" style="display: grid; grid-template-columns: repeat(auto-fill, 120px);grid-row-gap: 12px;grid-column-gap: 12px;">
+    {{ range $index, $item := $dicts}}
+        <div class="card" style="width: 120px; height:160px; border:unset">
+            {{if $item.Cover}}
+                <img height="160px" width="100%" src="{{$item.Cover}}" class="card-img" alt="dict cover">
+            {{else}}
+                <img height="160px" width="100%" src="img/default_book_cover.webp" class="card-img" alt="dict cover"></img>
+            {{end}}
+            <div class="card-img-overlay text-center" style="margin-top:32px;top:unset;bottom:unset;border-radius:unset; background-color:rgba(248,249,250,0.65); padding: 4px">
+                <span style="font-size:13.5px;">{{$item.Name}}</span>
+            </div>
+            <a class="stretched-link" href="/dicts/{{$item.Id}}"></a>
+        </div>
+    {{end}}
+    </div>
+{{end}}

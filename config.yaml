@@ -1,0 +1,20 @@
+name: dicthub
+domain: localhost
+log:
+  level: -1
+  disableCaller: false
+db:
+  name: boat
+  uri: mongodb://localhost:27017
+  connectTimeout: 10s
+  userTable:
+    name: user
+  wordTable:
+    name: word
+  dictTable:
+    name: dict
+sonic:
+  host: localhost
+  port: 1491
+  pwd: SecretPassword
+  repush: false

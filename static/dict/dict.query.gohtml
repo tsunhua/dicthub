@@ -1,0 +1,39 @@
+{{ define "dict.query"}}
+    {{ $dicts := .Dicts}}
+    {{ $tags := .Tags}}
+    {{ $kw := .Kw }}
+    <!DOCTYPE html>
+    <html>
+    {{ template "head" "查詢詞典｜典合網"}}
+    <body>
+    <script>
+    </script>
+    <div class="content">
+        {{ if $dicts }}
+            {{ if $tags }}
+                <div class="mt-2">
+                    <span class="font-weight-bold">查詢到包含標籤</span>
+                    {{ range $tags}}
+                        <a class="badge badge-info" href="/dicts?tags={{.}}">{{ . }}</a>
+                    {{ end }}
+                    <span class="font-weight-bold">的辭典如下：</span>
+                </div>
+            {{else if $kw }}
+                 <div class="mt-2">
+                    <span class="font-weight-bold">查詢到包含&nbsp;<span class="text-info">{{$kw}}</span>&nbsp;的辭典如下：</span>
+                </div>
+            {{ end}}
+
+
+            <div class="mt-4" style="margin-bottom: 58px">
+                {{ template "dict.list" $dicts }}
+            </div>
+        {{else}}
+            <div class="content">空空如也</div>
+        {{end}}
+    </div>
+    {{ template "title"}}
+    {{ template "footer"}}
+    </body>
+    </html>
+{{ end }}

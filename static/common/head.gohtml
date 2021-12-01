@@ -1,0 +1,231 @@
+{{ define "head" }}
+    {{ $title :=. }}
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{{ $title }}</title>
+        <script src="/js/jquery-3.5.1.min.js"></script>
+        <script src="/js/popper-1.4.7.min.js"></script>
+        <script src="/js/dicthub.js"></script>
+        <link rel="stylesheet" href="/css/bootstrap-4.6.0.min.css">
+        <script src="/js/bootstrap-4.6.0.min.js"></script>
+        {{/* 站長統計 */}}
+        <script type="text/javascript">document.write(unescape("%3Cspan id='cnzz_stat_icon_1279943611'%3E%3C/span%3E%3Cscript src='https://s9.cnzz.com/z_stat.php%3Fid%3D1279943611' type='text/javascript'%3E%3C/script%3E"));</script>
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-C250XQX539"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-C250XQX539');
+        </script>
+
+        <style>
+            @media screen and (max-width:768px){
+                .title {
+                    display: none;
+                }
+                .cat-mobile{
+                    display: unset;
+                }
+                .cat-desktop{
+                    display: none;
+                }
+                .table{
+                    width: auto;
+                }
+            }
+            @media screen and (min-width:768px){
+                .cat-mobile{
+                    display: none;
+                }
+                
+                .cat-desktop{
+                    display: unset;
+                    min-width: 160px;
+                }
+
+                .table{
+                    width: 660px;
+                }
+            }
+
+            .search {
+                margin-left: 2%;
+                margin-right: 2%;
+            }
+
+            /*@font-face {
+                font-family: KosugiMaru;
+                src: url('/font/KosugiMaru-Regular.ttf');
+            }*/
+
+            .content {
+                padding: 2rem;
+                border-radius: .25rem;
+                border: 1px solid #dee2e6;
+                position: relative;
+                /* background-color: #FAF9DE; */
+                max-width: 720px;
+                margin-left: 2%;
+                margin-right: 5%;
+                /*margin-top: 22px;*/
+                margin-bottom: 58px;
+                /* margin: auto; */
+                margin-top: 86px;
+            }
+
+            .dh-card {
+                padding: 2rem;
+                border-radius: .25rem;
+                border: 1px solid #dee2e6;
+                position: relative;
+                max-width: 720px;
+                margin-left: 2%;
+                margin-right: 5%;
+                margin-top: 22px;
+                margin-bottom: 58px;
+            }
+
+            .search .btn-outline-light:hover {
+                color: #f8f9fa;
+                background-color: #77754A;
+                border-color: #f8f9fa;
+            }
+
+            .pointer {
+                cursor: pointer
+            }
+
+            .title-bar {
+                background-color: #77754A;
+                padding-left: 2rem;
+			    position: fixed; 
+                width: 100%;
+                height: 64px;
+                right: 0;
+                top: 0;
+            }
+
+            .title {
+                font-family: KosugiMaru, -apple-system, BlinkMacSystemFont, sans-serif;
+                font-size: 22px;
+                text-decoration: none !important;
+                color: #212529;
+                letter-spacing: 2px;
+                white-space:nowrap;
+            }
+
+            .title-sub {
+                font-size: 20px;
+                color: #212529;
+                letter-spacing: 1px;
+                margin-bottom: 4px;
+                font-weight: bold;
+            }
+
+            .title-item {
+                letter-spacing: 2px;
+                font-size: 20px;
+                color: #1e7e34
+            }
+
+            .tooltip {
+                font-size: 12px;
+            }
+
+            html {
+                min-height: 100%;
+                position: relative;
+            }
+
+            body {
+                font: 16px -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            }
+
+            table, span{
+                font-family: sans-serif;
+            }
+
+            .footer {
+                background-color: #323232;
+                color: snow;
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 36px;
+                padding-left: 3%;
+                padding-right: 5%;
+            }
+
+            .footer > a:link, .footer > a:visited {
+                color: #68b1b5;
+                text-decoration: none;
+            }
+
+            .footer > a:hover, .footer > a:active {
+                color: #51989c;
+            }
+
+            .bread > a:link, .bread > a:visited {
+                color: gray;
+                text-decoration: none;
+            }
+
+            .bread > a:hover, .bread > a:active {
+                color: gray;
+            }
+
+            a:link, a:visited {
+                color: #4883d0;
+                text-decoration: none;
+            }
+
+            a:hover, a:active {
+                color: #3f70b4;
+            }
+
+            .badge-info {
+                color: #fff !important;
+                background-color: #17a2b8;
+            }
+
+            .text-danger {
+                color: #e77164 !important;
+            }
+            
+
+            nav > div > a:hover, nav > div > a:link, nav > div > a:visited {
+                color: rgba(0,0,0,0.85);
+                text-decoration: none;
+                background-color: transparent;
+            }
+
+            nav > div > a {
+                display: block;
+                padding: .25rem 1.5rem;
+                font-size: 90%;
+                color: rgba(0,0,0,0.65);
+            }
+            
+            .mw-1{
+                in-width: 36px;
+            }
+
+            .mw-2{
+                min-width: 48px;
+            }
+
+            .mw-3{
+                min-width: 64px;
+            }
+
+        </style>
+        <script>
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
+        </script>
+    </head>
+{{ end }}

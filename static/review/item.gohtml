@@ -1,0 +1,35 @@
+{{ define "item"}}
+    {{ $hasPermission := .HasPermission }}
+    {{  $item := .Item }}
+    <!DOCTYPE html>
+    <html>
+    {{ template "head" "詳情｜悅複習"}}
+    <body>
+    {{ template "title" "悅複習,/review"}}
+    <div class="content">
+        <div>
+            <span class="title-item">{{ $item.Title }}</span>
+            <span class="small">[<a href="/review/edit?id={{$item.Id}}">編輯</a>]</span>
+            <hr/>
+        </div>
+        {{/*內容*/}}
+        <div class="mb-3">
+            <p>{{ $item.Content }}</p>
+            {{/*鏈接*/}}
+            {{ if $item.Link }}
+                <p class="small"><a href="{{ $item.Link }}"> 閱讀更多 </a></p>
+            {{ end }}
+        </div>
+    </div>
+    {{ template "footer"}}
+    <script>
+        window.onload = function () {
+            if (!{{$hasPermission}}) {
+                window.location.href = "/user/login"
+                alert("請先登入系統再進行後續操作")
+            }
+        }
+    </script>
+    </body>
+    </html>
+{{ end }}

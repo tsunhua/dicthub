@@ -1,0 +1,47 @@
+{{ define "search"}}
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <button id="searchByBtn" class="btn btn-outline-light dropdown-toggle" type="button"
+                    data-toggle="dropdown">查詞
+            </button>
+            <div class="dropdown-menu">
+                <div id="searchByWritingDiv" class="dropdown-item pointer">查詞</div>
+                <div role="separator" class="dropdown-divider"></div>
+                <div id="searchByTagDiv" class="dropdown-item pointer">尋典</div>
+            </div>
+        </div>
+        <input placeholder="輸入什麼都可以" type="text" style="background-color:#ececec;" class="form-control" id="searchInput">
+        <div class="input-group-append">
+            <button id="searchBtn" class="btn btn-outline-light" type="button">搜索</button>
+        </div>
+    </div>
+    <script>
+        $('#searchByTagDiv').click(function () {
+            $('#searchByBtn').text("尋典")
+        })
+
+        $('#searchByWritingDiv').click(function () {
+            $('#searchByBtn').text("查詞")
+        })
+
+        $('#searchInput').keydown(function (event) {
+            if (event.keyCode !== 13) { // not Enter
+                return
+            }
+            if ($('#searchInput').val().trim() === '') {
+                return
+            }
+            $('#searchBtn').trigger('click')
+        })
+
+        $('#searchBtn').click(function () {
+            let searchInput = document.getElementById('searchInput')
+            if ($('#searchByBtn').text() === '尋典') {
+                window.open("/search/dicts?kw=" + searchInput.value.trim(), "_self")
+            } else {
+                window.open("/search/words?kw=" + searchInput.value.trim(), "_self")
+            }
+            searchInput.value = ""
+        })
+    </script>
+{{ end }}

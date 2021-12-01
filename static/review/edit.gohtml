@@ -1,0 +1,67 @@
+{{ define "edit"}}
+    {{ $hasPermission := .HasPermission }}
+    {{ $item := .Item }}
+    <!DOCTYPE html>
+    <html>
+    {{ template "head" "編輯｜悅複習"}}
+    <body>
+    {{ template "title" "悅複習,/review"}}
+    <div class="content">
+        <form id="editReviewForm" method="post" action="/api/review/edit" target="hide_iframe">
+            <div class="title-sub">編輯複習項目</div>
+            <div style="display: none">
+                <input type="text" name="id" value="{{$item.Id}}">
+            </div>
+            <div class="mb-3">
+                <label for="titleInput" class="form-label">標題</label>
+                <input type="text" class="form-control" id="titleInput" name="title" placeholder="問句最佳"
+                       value="{{$item.Title}}" required>
+            </div>
+            <div class="mb-3">
+                <label for="contentInput" class="form-label">內容<span
+                            class="small text-info">（支持Markdown）</span></label>
+                <textarea class="form-control" id="contentInput" rows="10" name="content" placeholder="簡要，分點敘述爲佳"
+                          required>{{$item.Content}}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="linkInput" class="form-label">鏈接<span class="small text-info ml-1">(非必填)</span></label>
+                <input type="text" class="form-control" id="linkInput" name="link" value="{{$item.Link}}">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary d-inline-block">提交</button>
+            </div>
+        </form>
+        <iframe name="hide_iframe" style="display:none;"></iframe>
+    </div>
+    {{ template "footer"}}
+    <script>
+        const form = $('#editReviewForm')
+        form.submit(function (event) {
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function () {
+                    const lastPage = $.trim(document.referrer)
+                    if (lastPage) {
+                        history.go(-1)
+                    }
+                },
+                error: function (msg) {
+                    alert("提交失敗：" + msg)
+                }
+            });
+            event.preventDefault()
+            this.reset()
+        });
+
+        window.onload = function () {
+            if (!{{$hasPermission}}) {
+                window.location.href = "/user/login"
+                alert("請先登入系統再進行後續操作")
+            }
+        }
+    </script>
+    </body>
+    </html>
+{{ end }}

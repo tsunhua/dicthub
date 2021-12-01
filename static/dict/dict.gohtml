@@ -1,0 +1,149 @@
+{{ define "dict"}}
+    {{ $dict := .Dict }}
+    {{ $words := .Words }}
+    {{ $categoryLinkId := .CategoryLinkId}}
+    <!DOCTYPE html>
+    <html>
+    {{ template "head" list $dict.Name "典合網" | join "｜"}}
+    <body>
+    <div class="content container-fluid" style="max-width: 900px">
+        <div class="row flex-nowrap">
+            <div class="cat-desktop" >
+                <nav class="pr-3">
+                        {{ range $i,$it :=  $dict.CatalogTree }}
+                            {{ if eq $it.Level 0}}
+                                {{ if eq $categoryLinkId $it.LinkId }}
+                                    <div class="bd-toc-item font-weight-bold" style="padding-left: {{mul $it.Level 10}}px; font-size:100%;background-color:#87b381">
+                                        <a class="bd-toc-link" style="padding: .4rem 1.5rem;" href="/dicts/{{$dict.Id}}/{{$it.LinkId}}">{{$it.Number}}&nbsp;{{$it.Name}}</a>
+                                    </div>
+                                {{ else }}
+                                    <div class="bd-toc-item font-weight-bold" style="padding-left: {{mul $it.Level 10}}px;font-size:100%">
+                                        <a class="bd-toc-link" style="padding: .4rem 1.5rem;" href="/dicts/{{$dict.Id}}/{{$it.LinkId}}">{{$it.Number}}&nbsp;{{$it.Name}}</a>
+                                    </div>
+                                {{ end }}
+                            {{ else }}
+                             {{ if eq $categoryLinkId $it.LinkId }}
+                                 <div class="bd-toc-item" style="padding-left: {{mul $it.Level 10}}px; background-color:#87b381">
+                                    <a class="bd-toc-link" href="/dicts/{{$dict.Id}}/{{$it.LinkId}}">{{$it.Number}}&nbsp;{{$it.Name}}</a>
+                                </div>
+                             {{else}}
+                                <div class="bd-toc-item" style="padding-left: {{mul $it.Level 10}}px">
+                                    <a class="bd-toc-link" href="/dicts/{{$dict.Id}}/{{$it.LinkId}}">{{$it.Number}}&nbsp;{{$it.Name}}</a>
+                                </div>
+                             {{end}}
+                               
+                            {{ end }}
+                        {{ end }}
+                </nav>
+            </div>
+            
+            <div>
+                {{ if $categoryLinkId }}
+                    <div class="small mb-2">
+                        <span class="bread"><a href="/dicts/{{$dict.Id}}">{{$dict.Name}}</a></span>
+                        {{ if gt (len $words) 0}}
+                            {{$word := index $words 0}}
+                            {{ range $word.Catalogs}}
+                                {{ if contains .LinkId $categoryLinkId}}
+                                    <span class="bread">/&nbsp;<a href="/dicts/{{$word.Dict.Id}}/{{.LinkId}}">{{.Name}}</a></span>
+                                {{end}}
+                            {{ end }}
+                        {{end}}
+                    </div>
+                    <table class="table table-sm table-striped table-bordered">
+                         <thead>
+                            <tr>
+                                <th class="mw-1" scope="col">#</th>
+                                <th class="mw-2" scope="col">條目</th>
+                                {{ range $dict.PreferSpecs}}
+                                    <th class="mw-2" scope="col">{{.LinkName}}</th>
+                                {{end}}
+                                <th class="mw-2" scope="col">描述</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ range $i,$it :=  $words }}
+                                <tr>
+                                    <th scope="row">{{add1 $i}}</th>
+                                    <td>
+                                        <a href="/words/{{$it.Writing}}/{{$it.Id}}"><span>{{$it.Writing}}</span></a>
+                                    </td>
+                                    {{ range $j,$jt := $dict.PreferSpecs}}
+                                        {{ if gt (len $it.Specs) 0}}
+                                            {{ range $k,$kt :=  $it.Specs}}
+                                                {{if eq $jt.LinkId $kt.LinkId}}
+                                                    <td>{{$kt.Value}}</td>
+                                                {{else}}
+                                                    <td></td>
+                                                {{end}}
+                                            {{ end }}
+                                        {{else}}
+                                            <td></td>
+                                        {{end}}
+                                    {{end}}
+                                     
+                                     <td>
+                                        {{abbrev 18 $it.MeaningRaw}}
+                                     </td>
+                                </tr>
+                            {{ end }}
+                            <tr>
+                        <tbody>
+                    </table>
+                {{ else }}
+                    <div>
+                        <span class="title-item">{{ $dict.Name }}</span>
+                        <span class="small">[<a href="/editor/dict?dictId={{$dict.Id}}">編輯</a>]</span>
+                        <span class="small">[<a href="/editor/word?dictId={{$dict.Id}}">添加條目</a>]</span>
+                        {{/* {{ if $dict.FeedbackEmail }}
+                            <span class="small">
+                                [<a href="mailto:{{$dict.FeedbackEmail}}?subject=請求參與編輯{{$dict.Name}}">參與編輯</a>]
+                            </span>
+                        {{ end}} */}}
+                        {{ if $dict.Tags }}
+                            <div class="mt-1">
+                                {{ range $dict.Tags}}
+                                    <a class="badge badge-info" href="/dicts?tags={{.}}">{{ . }}</a>
+                                {{ end }}
+                            </div>
+                        {{ end}}
+
+                        <hr/>
+
+                        <div>
+                            {{ $dict.Desc }}
+                        </div>
+                    </div>
+                {{ end }}
+            </div>
+            
+        </div>
+    </div>
+    
+    {{ template "title" title $dict $categoryLinkId }}
+    
+    {{ template "footer"}}
+    </body>
+    <script>
+        function addWord(dictId) {
+            window.open("/editor/word?dictId=" + dictId, "_blank");
+        }
+
+        function editDict(dictId){
+            window.open("/editor/dict?dictId=" + dictId, "_self");
+        }
+
+        $('#searchInput').keydown(function (event) {
+            if (event.keyCode !== 13) { // not Enter
+                return
+            }
+            if ($('#searchInput').val().trim() === '') {
+                return
+            }
+            let searchInput = document.getElementById('searchInput')
+            window.open("/words/" + searchInput.value.trim(), "_self")
+            searchInput.value = ""
+        })
+    </script>
+    </html>
+{{ end }}

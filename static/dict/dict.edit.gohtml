@@ -1,0 +1,71 @@
+{{ define "dict.edit"}}
+    {{ $hasPermission := .HasPermission }}
+    {{ $dict := .Dict}}
+    <!DOCTYPE html>
+    <html>
+    {{ template "head" "編輯詞典｜典合網"}}
+    <body>
+    {{ if $hasPermission}}
+    <form class="content" id="editWordForm">
+        <div class="title-sub mb-2">編輯詞典</div>
+        <div style="display: none">
+            <input type="text" name="id" value="{{$dict.Id}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="nameInput" class="form-label">名稱</label>
+            <input type="text" class="form-control" id="nameInput" name="name" value="{{$dict.Name}}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="catalogInput" class="form-label">目錄</label>
+            <textarea type="text" class="form-control" rows="8" id="catalogInput" name="catalogTree">{{jsonp $dict.CatalogTree}}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="specTreeInput" class="form-label">屬性</label>
+            <textarea type="text" class="form-control" rows="8" id="specTreeInput" name="specTree">{{jsonp $dict.SpecTree}}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="preferSpecLinkIdsInput" class="form-label">偏好屬性(將顯示在詞彙表格中)</label>
+            <input type="text" class="form-control" id="preferSpecLinkIdsInput" name="preferSpecLinkIds" value="{{json $dict.PreferSpecLinkIds}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="descInput" class="form-label">描述<span class="small text-info">（支持<a
+                            href="https://gist.github.com/billy3321/1001749662c370887c63bb30f26c9e6e">Markdown</a>）</span></label>
+            <textarea class="form-control" id="descInput" rows="20" name="desc">{{$dict.Desc}}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="tagsInput" class="form-label">標籤</label>
+            <input type="text" class="form-control" id="tagsInput" name="tags" value="{{json $dict.Tags}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="feedbackEmailInput" class="form-label">意見反饋郵箱</label>
+            <input type="text" class="form-control" id="feedbackEmailInput" name="feedbackEmail" value="{{$dict.FeedbackEmail}}">
+        </div>
+
+        <div>
+            <button id="submitBtn" type="submit" class="btn btn-primary d-inline-block">更新</button>
+            <div class="d-inline-block ml-2 small" style="color: #17a2b8" id="submitTip"></div>
+        </div>
+    </form>
+    {{else}}
+        <script type="text/javascript">
+           window.onload = function () {
+                window.location.href = "/login"
+                alert("請先登入系統再進行後續操作")
+            }
+        </script>
+    {{end}}
+    {{ template "title"}}
+    {{ template "footer"}}
+    <script>
+        $('#submitBtn').on('click', updateDict)
+    </script>
+    </body>
+    </html>
+{{ end }}

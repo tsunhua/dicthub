@@ -1,0 +1,79 @@
+{{ define "title"}}
+    {{ $title := .}}
+    <div class="title-bar d-flex align-items-center">
+        <div class="mb-1 mr-2">
+            <a href="/">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="white" class="bi bi-house-fill" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
+                    <path fill-rule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
+                </svg>
+            </a>
+        </div>
+        
+        {{if and $title $title.SelectedCatId }}
+            <div class="title"><a href="/dicts/{{$title.Dict.Id}}" class="title" style="color: white;"><span>{{$title.Dict.Name}}</span></a></div>
+        {{else}}
+            <div class="title"><a href="/" class="title" style="color: white;"><span>典合網</span></a></div>
+        {{end}}
+        <div class="search">
+            {{ template "search" }}
+        </div>
+        {{if $title}}
+            <div class="cat-mobile">
+                <button class="btn btn-link" style="color:white;" type="button"  data-toggle="modal" data-target="#catlogModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" role="img" focusable="false">
+                        <title>Menu</title>
+                        <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path>
+                    </svg>
+                </button>
+
+                <!-- Modal -->
+                <div class="modal" data-backdrop="" id="catlogModal" tabindex="-1" aria-labelledby="catlogModalLabel" aria-hidden="false">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="catlogModalLabel">目錄</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="false">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <nav>
+                                {{ range $i,$it :=  $title.Dict.CatalogTree }}
+                                    {{ if eq $it.Level 0}}
+                                        {{ if eq $title.SelectedCatId $it.LinkId }}
+                                            <div class="font-weight-bold" style="padding-left: {{mul $it.Level 10}}px; font-size:100%;background-color:#87b381">
+                                                <a style="padding: .4rem 1.5rem;" href="/dicts/{{$title.Dict.Id}}/{{$it.LinkId}}">{{$it.Number}}&nbsp;{{$it.Name}}</a>
+                                            </div>
+                                        {{ else }}
+                                            <div class="font-weight-bold" style="padding-left: {{mul $it.Level 10}}px;font-size:100%">
+                                                <a style="padding: .4rem 1.5rem;" href="/dicts/{{$title.Dict.Id}}/{{$it.LinkId}}">{{$it.Number}}&nbsp;{{$it.Name}}</a>
+                                            </div>
+                                        {{ end }}
+                                    {{ else }}
+                                    {{ if eq $title.SelectedCatId $it.LinkId }}
+                                        <div style="padding-left: {{mul $it.Level 10}}px; background-color:#87b381">
+                                            <a href="/dicts/{{$title.Dict.Id}}/{{$it.LinkId}}">{{$it.Number}}&nbsp;{{$it.Name}}</a>
+                                        </div>
+                                    {{else}}
+                                        <div style="padding-left: {{mul $it.Level 10}}px">
+                                            <a href="/dicts/{{$title.Dict.Id}}/{{$it.LinkId}}">{{$it.Number}}&nbsp;{{$it.Name}}</a>
+                                        </div>
+                                    {{end}}
+                                    
+                                    {{ end }}
+                                {{ end }}
+                            </nav>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{end}}
+    </div>
+    <script>
+    </script>
+{{ end }}

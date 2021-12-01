@@ -1,0 +1,38 @@
+{{ define "index"}}
+    {{ $items := .Items }}
+    {{ $hasPermission := .HasPermission}}
+    <!DOCTYPE html>
+    <html>
+    {{ template "head" "悅複習"}}
+    <body>
+    {{ template "title" "悅複習,/review"}}
+    <div class="content">
+        <div class="title-sub">近期複習項目</div>
+        <div>
+            {{ range $index, $item := $items }}
+                <div>[{{add1 $index}}]&nbsp;
+                    <a style="position: relative" href="/review/item?id={{ $item.Id }}">{{ $item.Title }}</a>
+                    <span class="small">({{ NextTimeFriendly .NextTime }})</span>
+                </div>
+            {{ end }}
+            <div class="mt-4">
+                <button type="button" class="btn-sm btn-primary" onclick="openAddPage()">添加一項</button>
+            </div>
+        </div>
+    </div>
+    {{ template "footer"}}
+    <script>
+        window.onload = function () {
+            if (!{{$hasPermission}}) {
+                window.location.href = "/user/login"
+                alert("請先登入系統再進行後續操作")
+            }
+        }
+
+        function openAddPage() {
+            window.open("/review/add", "_self");
+        }
+    </script>
+    </body>
+    </html>
+{{ end }}

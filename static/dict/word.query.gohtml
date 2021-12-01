@@ -1,0 +1,51 @@
+{{ define "word.query"}}
+    {{ $words := .Words}}
+    {{ $kw := .Kw }}
+    <!DOCTYPE html>
+    <html>
+    {{ template "head" "典合網"}}
+    <body>
+    <script>
+    </script>
+    <div class="mr-4 ml-4" style="margin-bottom: 58px; margin-top: 86px;">
+        {{if $kw }}
+            <div class="mt-2 mb-2">
+                <span class="font-weight-bold">查詢到包含&nbsp;<span class="text-info">{{$kw}}</span>&nbsp;的條目如下：</span>
+            </div>
+        {{ end}}
+
+        {{ if $words }}
+             <table class="table table-sm table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th class="mw-1" scope="col">#</th>
+                        <th class="mw-2" scope="col">條目</th>
+                        <th class="mw-3" scope="col">描述</th>
+                        <th class="mw-2" scope="col">位置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range $index, $word := $words}}
+                    <tr>
+                        <th scope="row">{{add1 $index}}</th>
+                        <td><a href="/words/{{$word.Writing}}/{{$word.Id}}">{{ $word.Writing }}</a></td>
+                        <td>{{ abbrev 20 $word.MeaningRaw }}</td>
+                        <td class="small">
+                            <span class="bread"><a href="/dicts/{{$word.Dict.Id}}">{{$word.Dict.Name}}</a></span>
+                            {{ range $word.Catalogs}}
+                                <span class="bread">/&nbsp;<a href="/dicts/{{$word.Dict.Id}}/{{.LinkId}}">{{.Name}}</a></span>
+                            {{ end }}
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        {{else}}
+            <div class="content">暫無條目</div>
+        {{end}}
+    </div>
+    {{ template "title"}}
+    {{ template "footer"}}
+    </body>
+    </html>
+{{ end }}

@@ -1,0 +1,118 @@
+{{ define "word.add"}}
+    {{ $dict := .Dict}}
+    {{ $hasPermission := .HasPermission }}
+    {{ $completions := .Completions}}
+    <!DOCTYPE html>
+    <html lang="zh">
+    {{ template "head" "添加條目｜典合網"}}
+    <body>
+    {{ if $hasPermission}}
+    <form class="content" id="addWordForm">
+        <div class="title-sub">添加條目</div>
+        <div style="display: none">
+            <input type="text" name="dictId" value="{{$dict.Id}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="dictIdDiv" class="form-label">辭書</label>
+            <div id="dictIdDiv"><a href="/dicts/{{$dict.Id}}">{{$dict.Name}}</a>({{$dict.Id}})</div>
+        </div>
+        <div class="mb-3">
+            <label for="writingInput" class="form-label">條目</label>
+            <input type="text" class="form-control" id="writingInput" name="writing" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="catalogInput" class="form-label">分類</label>
+            <div id="catalogInput">
+                <select class="custom-select" name="catalogLinkId" style="max-width: 220px">
+                    <option value="">請選擇</option>
+                    {{ range $dict.CatalogTree}}
+                        {{if not .IsLastLevel}}
+                        {{ else }}
+                            <option value="{{.LinkId}}">{{.LinkName}}</option>
+                        {{end}}
+                    {{end}}
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="specsInput" class="form-label">屬性</label>
+            <div id="specsInput">
+                <div class="input-group">
+                    <select class="custom-select" name="linkId" style="max-width: 220px">
+                            <option value="">請選擇</option>
+                            {{ range $dict.SpecTree}}
+                                {{if not .IsLastLevel}}
+                                {{else}}
+                                    <option value="{{.LinkId}}">{{.LinkName}}</option>
+                                {{end}}
+                            {{end}}
+                    </select>
+                    <input type="text" class="form-control" id="specInput" name="value" placeholder="屬性值">
+                    <input type="text" class="form-control" id="noteInput" name="note" placeholder="備註"
+                           style="max-width: 80px" data-toggle="tooltip" data-placement="bottom" title="備註信息">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button"
+                                onclick="this.parentElement.parentElement.remove()">移除
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2">
+                <button id="addSpecBtn" class="btn btn-outline-secondary" type="button">新增一項屬性</button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="meaningInput" class="form-label">描述<span class="small text-info">（支持<a
+                            href="https://gist.github.com/billy3321/1001749662c370887c63bb30f26c9e6e">Markdown</a>）</span></label>
+            <textarea class="form-control" id="meaningInput" rows="5" name="meaning"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="completionDiv" class="form-label">完善程度</label>
+            <div id="completionDiv" class="ml-2">
+                {{ range $index,$item := $completions}}
+                    <div class="form-check form-check-inline">
+                        {{ if eq $index 0}}
+                            <input class="form-check-input" type="radio" id="completionInput{{$index}}"
+                                   name="completion"
+                                   value="{{ $item.Value }}" checked>
+                        {{ else }}
+                            <input class="form-check-input" type="radio" id="completionInput{{$index}}"
+                                   name="completion"
+                                   value="{{ $item.Value }}">
+                        {{ end }}
+                        <label class="form-check-label" for="completionInput{{$index}}">{{ $item.Name }}</label>
+                    </div>
+                {{ end }}
+            </div>
+        </div>
+
+        <div>
+            <button id="submitBtn" type="submit" class="btn btn-primary d-inline-block">添加</button>
+            <div class="d-inline-block ml-2 small" style="color: #17a2b8" id="submitTip"></div>
+        </div>
+    </form>
+    {{else}}
+        <script type="text/javascript">
+           window.onload = function () {
+                window.location.href = "/login"
+                alert("請先登入系統再進行後續操作")
+            }
+        </script>
+    {{end}}
+    {{ template "title"}}
+    {{ template "footer"}}
+    <script>
+        $('#submitBtn').on('click', addWord)
+        
+        $('#addSpecBtn').on('click', function () {
+            $('#specsInput').append( $('#specsInput').children("div").last()[0].cloneNode(true) )
+        })
+    </script>
+    </body>
+    </html>
+{{ end }}
