@@ -93,11 +93,11 @@ func UpdateDict(dict *model.Dict) (err error) {
 	if dict.Tags != nil {
 		update["tags"] = dict.Tags
 	}
-	if dict.CatalogTree != nil {
-		update["catalogTree"] = dict.CatalogTree
+	if dict.CatalogText != "" {
+		update["catalogText"] = dict.CatalogText
 	}
-	if dict.SpecTree != nil {
-		update["specTree"] = dict.SpecTree
+	if dict.SpecText != "" {
+		update["specText"] = dict.SpecText
 	}
 	_, err = getDictTable().UpdateOne(context.TODO(), bson.M{"id": dict.Id}, bson.M{"$set": update})
 	return

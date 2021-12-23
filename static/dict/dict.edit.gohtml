@@ -19,12 +19,12 @@
 
         <div class="mb-3">
             <label for="catalogInput" class="form-label">目錄</label>
-            <textarea type="text" class="form-control" rows="8" id="catalogInput" name="catalogTree">{{jsonp $dict.CatalogTree}}</textarea>
+            <textarea type="text" class="form-control" rows="8" id="catalogInput" name="catalogText">{{$dict.CatalogText}}</textarea>
         </div>
 
         <div class="mb-3">
             <label for="specTreeInput" class="form-label">屬性</label>
-            <textarea type="text" class="form-control" rows="8" id="specTreeInput" name="specTree">{{jsonp $dict.SpecTree}}</textarea>
+            <textarea type="text" class="form-control" rows="8" id="specTreeInput" name="specText">{{$dict.SpecText}}</textarea>
         </div>
 
         <div class="mb-3">
@@ -40,7 +40,7 @@
 
         <div class="mb-3">
             <label for="tagsInput" class="form-label">標籤</label>
-            <input type="text" class="form-control" id="tagsInput" name="tags" value="{{json $dict.Tags}}">
+            <input type="text" class="form-control" id="tagsInput" name="tags" value="{{$dict.Tags | join ","}}">
         </div>
 
         <div class="mb-3">

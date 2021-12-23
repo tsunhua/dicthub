@@ -38,7 +38,6 @@ type DictBO struct {
 }
 
 // 場景： 編輯條目（扁平結構即可）、查看辭書（深度優先遍歷）
-// 場景：編輯條目（扁平結構即可）、查看辭書（深度優先遍歷）
 type TreeNodeBO struct {
 	Id          string `bson:"id" json:"id"`
 	Name        string `bson:"name" json:"name"`

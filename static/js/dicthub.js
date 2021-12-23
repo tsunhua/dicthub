@@ -117,11 +117,11 @@ function arr2Dict(arr) {
     for (let i = 0; i < arr.length;) {
         const v = arr[i]
         switch(v.name){
-            case "catalogTree":
-            case "specTree":
+            // case "catalogText":
+            // case "specText":
             case "preferSpecLinkIds":
             case "tags":
-                dict[v.name] = JSON.parse(v.value)
+                dict[v.name] = v.value.split(',')
                 break
             default:
                 dict[v.name] = v.value.trim();

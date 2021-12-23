@@ -28,6 +28,7 @@ require (
 	github.com/satori/go.uuid v1.2.0
 	github.com/sergi/go-diff v1.1.0
 	github.com/spf13/cast v1.3.1
+	github.com/stretchr/testify v1.5.1
 	github.com/tidwall/pretty v1.0.2 // indirect
 	github.com/unrolled/secure v1.0.9
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect

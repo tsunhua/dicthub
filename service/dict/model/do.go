@@ -20,7 +20,9 @@ type Dict struct {
 	Contributor       string      `bson:"contributor" json:"contributor"`
 	FeedbackEmail     string      `bson:"feedbackEmail" json:"feedbackEmail"`
 	CatalogTree       []*TreeNode `bson:"catalogTree" json:"catalogTree"`
+	CatalogText       string      `bson:"catalogText" json:"catalogText"`
 	SpecTree          []*TreeNode `bson:"specTree" json:"specTree"`
+	SpecText          string      `bson:"specText" json:"specText"`
 	PreferSpecLinkIds []string    `bson:"preferSpecLinkIds" json:"preferSpecLinkIds"`
 	Tags              []string    `bson:"tags" json:"tags"`
 	CreateTime        time.Time   `bson:"createTime" json:"createTime"`
