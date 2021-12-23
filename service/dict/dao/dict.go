@@ -126,7 +126,7 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 }
 
 func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
-	lines := strings.Split(text, "\n")
+	lines := strings.Split(text, "\r\n")
 	reg, err := regexp.Compile("(#*) (.*)/(.*)")
 	if err != nil {
 		return nil

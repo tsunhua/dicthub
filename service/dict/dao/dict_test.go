@@ -7,13 +7,7 @@ import (
 )
 
 func TestParseCategory(t *testing.T) {
-	text := `# 人物/renwu
-## 泛稱/chenghu
-### 人稱·指代/rencheng-zhidai
-### 一般指稱·尊稱/yibangzhicheng-zuncheng
-### 詈稱·貶稱/licheng-biancheng
-## 性格/xingge
-# 動詞/dongci`
+	text := "# 人物/renwu\r\n## 泛稱/chenghu\r\n### 人稱·指代/rencheng-zhidai\r\n### 一般指稱·尊稱/yibangzhicheng-zuncheng\r\n### 詈稱·貶稱/licheng-biancheng\r\n## 性格/xingge\r\n# 動詞/dongci"
 	nodes := parse2TreeNodeBOs(text)
 
 	assert.Equal(t, 7, len(nodes))
