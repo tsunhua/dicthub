@@ -158,6 +158,8 @@ func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
 			lastNumber = lastNumber[:strings.LastIndex(lastNumber, NUMBER_LINKER)]
 			count = cast.ToInt(lastNumber[strings.LastIndex(lastNumber, NUMBER_LINKER)+1:]) + 1
 			lastNumber = lastNumber[:strings.LastIndex(lastNumber, NUMBER_LINKER)]
+		case level > lastLevel:
+			count = 1
 		}
 		linkId = lastLinkId + ID_LINKER + id
 		linkName = lastLinkName + NAME_LINKER + name
