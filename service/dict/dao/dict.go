@@ -121,7 +121,7 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 
 func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
 	lines := strings.Split(text, "\r\n")
-	reg, err := regexp.Compile("(#*) (.*)/(.*)")
+	reg, err := regexp.Compile(`(#*) (.+?)/([^\/]*)/?(.*)?`)
 	if err != nil {
 		return nil
 	}
@@ -132,7 +132,7 @@ func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
 	lastNumber := ""
 	count := 1
 	for _, line := range lines {
-		strs := reg.FindStringSubmatch(line)
+		strs := reg.FindStringSubmatch(line)		
 		if len(strs) < 3 {
 			continue
 		}
