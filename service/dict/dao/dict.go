@@ -122,6 +122,9 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 
 func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
 	lines := strings.Split(text, "\r\n")
+	if len(lines) == 0 {
+		return nil
+	}
 	reg, err := regexp.Compile(`(#*) (.+?)/([^\/]*)/?(.*)?`)
 	if err != nil {
 		return nil
@@ -171,6 +174,21 @@ func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
 		lastLinkId = linkId
 		lastLinkName = linkName
 		lastNumber = number
+	}
+
+	if len(arr) == 0 {
+		return arr
+	}
+
+	arr[len(arr)-1].IsLastLevel = true
+	if len(arr) > 1 {
+		lastLevel := arr[len(arr)-1].Level
+		for i := len(arr) - 2; i >= 0; i-- {
+			if arr[i].Level >= lastLevel {
+				arr[i].IsLastLevel = true
+			}
+			lastLevel = arr[i].Level
+		}
 	}
 	return arr
 }
