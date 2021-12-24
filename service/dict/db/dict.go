@@ -99,6 +99,9 @@ func UpdateDict(dict *model.Dict) (err error) {
 	if dict.SpecText != "" {
 		update["specText"] = dict.SpecText
 	}
+	if dict.PreferSpecLinkIds != nil {
+		update["preferSpecLinkIds"] = dict.PreferSpecLinkIds
+	}
 	_, err = getDictTable().UpdateOne(context.TODO(), bson.M{"id": dict.Id}, bson.M{"$set": update})
 	return
 }

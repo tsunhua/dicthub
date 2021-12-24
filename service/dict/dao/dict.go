@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	ID_LINKER     = "~"
-	NAME_LINKER   = "·"
+	ID_LINKER     = "."
+	NAME_LINKER   = "/"
 	NUMBER_LINKER = "."
 )
 
@@ -83,14 +83,8 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 		return
 	}
 
-	// catalogTree := traversal(dict.CatalogTree, &traversalContext{
-	// 	lastLevel: -1,
-	// })()
 	catalogTree := parse2TreeNodeBOs(dict.CatalogText)
 
-	// specTree := traversal(dict.SpecTree, &traversalContext{
-	// 	lastLevel: -1,
-	// })()
 	specTree := parse2TreeNodeBOs(dict.SpecText)
 
 	var preferSpecs []*model.TreeNodeBO
@@ -139,7 +133,7 @@ func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
 	count := 1
 	for _, line := range lines {
 		strs := reg.FindStringSubmatch(line)
-		if len(strs) <3{
+		if len(strs) < 3 {
 			continue
 		}
 		level := len(strs[1])
@@ -148,29 +142,29 @@ func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
 		var linkId, linkName, number string
 		switch {
 		case level == lastLevel:
-			lastLinkId = lastLinkId[:strings.LastIndex(lastLinkId, "~")]
-			lastLinkName = lastLinkName[:strings.LastIndex(lastLinkName, "~")]
+			lastLinkId = lastLinkId[:strings.LastIndex(lastLinkId, ID_LINKER)]
+			lastLinkName = lastLinkName[:strings.LastIndex(lastLinkName, NAME_LINKER)]
 			count++
-			lastNumber = lastNumber[:strings.LastIndex(lastNumber, ".")]
+			lastNumber = lastNumber[:strings.LastIndex(lastNumber, NUMBER_LINKER)]
 		case level < lastLevel:
-			lastLinkId = lastLinkId[:strings.LastIndex(lastLinkId, "~")]
-			lastLinkId = lastLinkId[:strings.LastIndex(lastLinkId, "~")]
-			lastLinkName = lastLinkName[:strings.LastIndex(lastLinkName, "~")]
-			lastLinkName = lastLinkName[:strings.LastIndex(lastLinkName, "~")]
-			lastNumber = lastNumber[:strings.LastIndex(lastNumber, ".")]
-			count =  cast.ToInt(lastNumber[strings.LastIndex(lastNumber, ".")+1:])+1
-			lastNumber = lastNumber[:strings.LastIndex(lastNumber, ".")]
+			lastLinkId = lastLinkId[:strings.LastIndex(lastLinkId, ID_LINKER)]
+			lastLinkId = lastLinkId[:strings.LastIndex(lastLinkId, ID_LINKER)]
+			lastLinkName = lastLinkName[:strings.LastIndex(lastLinkName, NAME_LINKER)]
+			lastLinkName = lastLinkName[:strings.LastIndex(lastLinkName, NAME_LINKER)]
+			lastNumber = lastNumber[:strings.LastIndex(lastNumber, NUMBER_LINKER)]
+			count = cast.ToInt(lastNumber[strings.LastIndex(lastNumber, NUMBER_LINKER)+1:]) + 1
+			lastNumber = lastNumber[:strings.LastIndex(lastNumber, NUMBER_LINKER)]
 		}
-		linkId = lastLinkId + "~" + id
-		linkName = lastLinkName + "~" + name
-		number = lastNumber + "." + cast.ToString(count)
+		linkId = lastLinkId + ID_LINKER + id
+		linkName = lastLinkName + NAME_LINKER + name
+		number = lastNumber + NUMBER_LINKER + cast.ToString(count)
 		arr = append(arr, &model.TreeNodeBO{
 			Level:    level,
 			Name:     name,
 			Id:       id,
-			LinkId:   strings.TrimPrefix(linkId, "~"),
-			LinkName: strings.TrimPrefix(linkName, "~"),
-			Number:   strings.TrimPrefix(number, "."),
+			LinkId:   strings.TrimPrefix(linkId, ID_LINKER),
+			LinkName: strings.TrimPrefix(linkName, NAME_LINKER),
+			Number:   strings.TrimPrefix(number, NUMBER_LINKER),
 		})
 		lastLevel = level
 		lastLinkId = linkId
@@ -179,60 +173,3 @@ func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
 	}
 	return arr
 }
-
-// type traversalContext struct {
-// 	lastLevel    int
-// 	lastNumber   string
-// 	lastLinkId   string
-// 	lastLinkName string
-// }
-
-// func traversal(nodes []*model.TreeNode, ctx *traversalContext) func() []*model.TreeNodeBO {
-// 	var arr = make([]*model.TreeNodeBO, 0, 10)
-// 	return func() []*model.TreeNodeBO {
-// 		level := ctx.lastLevel + 1
-// 		number := ""
-// 		for index, node := range nodes {
-// 			linkId := ctx.lastLinkId
-// 			if linkId == "" {
-// 				linkId = node.Id
-// 			} else {
-// 				linkId = linkId + ID_LINKER + node.Id
-// 			}
-
-// 			linkName := ctx.lastLinkName
-// 			if linkName == "" {
-// 				linkName = node.Name
-// 			} else {
-// 				linkName = linkName + NAME_LINKER + node.Name
-// 			}
-
-// 			if ctx.lastNumber == "" {
-// 				number = cast.ToString(index + 1)
-// 			} else {
-// 				number = ctx.lastNumber + NUMBER_LINKER + cast.ToString(index+1)
-// 			}
-
-// 			nodeBO := &model.TreeNodeBO{
-// 				Id:          node.Id,
-// 				Name:        node.Name,
-// 				LinkId:      linkId,
-// 				LinkName:    linkName,
-// 				Level:       level,
-// 				IsLastLevel: node.Next == nil,
-// 				Number:      number,
-// 			}
-
-// 			arr = append(arr, nodeBO)
-// 			if node.Next != nil {
-// 				arr = append(arr, traversal(node.Next, &traversalContext{
-// 					lastLinkId:   linkId,
-// 					lastLinkName: linkName,
-// 					lastLevel:    level,
-// 					lastNumber:   number,
-// 				})()...)
-// 			}
-// 		}
-// 		return arr
-// 	}
-// }

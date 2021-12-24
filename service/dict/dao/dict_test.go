@@ -19,6 +19,8 @@ func TestParseCategory(t *testing.T) {
 	assert.Equal(t, 3, nodes[2].Level)
 	assert.Equal(t, "人稱·指代", nodes[2].Name)
 	assert.Equal(t, "rencheng-zhidai", nodes[2].Id)
+	assert.Equal(t, "renwu/chenghu/rencheng-zhidai", nodes[2].LinkId)
+	assert.Equal(t, "人物/泛稱/人稱·指代", nodes[2].LinkName)
 	
 	assert.Equal(t, "1.2", nodes[5].Number)
 }

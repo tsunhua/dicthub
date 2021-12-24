@@ -29,7 +29,7 @@
 
         <div class="mb-3">
             <label for="preferSpecLinkIdsInput" class="form-label">偏好屬性(將顯示在詞彙表格中)</label>
-            <input type="text" class="form-control" id="preferSpecLinkIdsInput" name="preferSpecLinkIds" value="{{json $dict.PreferSpecLinkIds}}">
+            <input type="text" class="form-control" id="preferSpecLinkIdsInput" name="preferSpecLinkIds" value="{{$dict.PreferSpecLinkIds | join ","}}">
         </div>
 
         <div class="mb-3">

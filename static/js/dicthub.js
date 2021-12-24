@@ -7,8 +7,9 @@ function updateDict(event) {
     event.preventDefault()
     // 解析數據
     let arr = form.serializeArray()
-    // console.log(arr)
+    console.log(arr)
     let dict = arr2Dict(arr);
+    console.log(JSON.stringify(dict))
     // 校驗數據
     if (dict['name'].trim() === '' || dict['desc'].trim() === '') {
         $('#submitTip').css('color', '#dc616a').text("請完成必填項後再提交")
@@ -117,8 +118,6 @@ function arr2Dict(arr) {
     for (let i = 0; i < arr.length;) {
         const v = arr[i]
         switch(v.name){
-            // case "catalogText":
-            // case "specText":
             case "preferSpecLinkIds":
             case "tags":
                 dict[v.name] = v.value.split(',')
@@ -152,8 +151,8 @@ function arr2word(arr) {
         } else if (v.name === 'catalogLinkId') {
             ids = []
             lastId = ''
-            for (id of v.value.split('~')) {
-                curId = lastId === '' ? id : lastId + "~" + id
+            for (id of v.value.split('/')) {
+                curId = lastId === '' ? id : lastId + "/" + id
                 ids.push(curId)
                 lastId = curId
             }
