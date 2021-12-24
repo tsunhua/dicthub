@@ -24,6 +24,7 @@ type WordBO struct {
 type DictBO struct {
 	Id            string        `bson:"id" json:"id"`
 	Name          string        `bson:"name" json:"name"`
+	IsPublic      bool          `bson:"isPublic" json:"isPublic"`
 	Cover         string        `bson:"cover" json:"cover"`
 	DescRaw       string        `bson:"desc" json:"descRaw"`
 	Desc          template.HTML `bson:"desc" json:"desc"`

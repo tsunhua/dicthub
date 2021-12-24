@@ -11,7 +11,7 @@ import (
 )
 
 func FindRecentDictList(limit int64, offset int64) (dicts []*model.Dict, err error) {
-	cur, err := getDictTable().Find(context.TODO(), bson.M{},
+	cur, err := getDictTable().Find(context.TODO(), bson.M{"isPublic": true},
 		options.Find().SetSort(bson.M{"updateTime": -1}).SetLimit(limit).SetSkip(offset))
 	if err != nil {
 		return
@@ -115,6 +115,10 @@ func getDictTable() *mongo.Collection {
 		{
 			Keys:    bson.M{"id": 1},
 			Options: options.Index().SetUnique(true),
+		},
+		{
+			Keys:    bson.M{"isPublic": 1},
+			Options: options.Index().SetUnique(false),
 		},
 	})
 	if err != nil {

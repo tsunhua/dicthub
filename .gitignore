@@ -17,3 +17,5 @@ app
 
 .idea/
 .vscode/
+
+config_prod.yaml

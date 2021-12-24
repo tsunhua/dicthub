@@ -104,6 +104,7 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 	dictBO = &model.DictBO{
 		Id:            dict.Id,
 		Name:          dict.Name,
+		IsPublic:      dict.IsPublic,
 		Cover:         dict.Cover,
 		DescRaw:       dict.Desc,
 		Desc:          template.HTML(util.MdToHtml([]byte(dict.Desc))),
@@ -132,7 +133,7 @@ func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
 	lastNumber := ""
 	count := 1
 	for _, line := range lines {
-		strs := reg.FindStringSubmatch(line)		
+		strs := reg.FindStringSubmatch(line)
 		if len(strs) < 3 {
 			continue
 		}

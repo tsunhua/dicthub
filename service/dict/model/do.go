@@ -15,6 +15,7 @@ const (
 type Dict struct {
 	Id                string      `bson:"id" json:"id"`
 	Name              string      `bson:"name" json:"name"`
+	IsPublic          bool        `bson:"isPublic" json:"isPublic"`
 	Desc              string      `bson:"desc" json:"desc"`
 	Cover             string      `bson:"cover" json:"cover"`
 	Contributor       string      `bson:"contributor" json:"contributor"`
