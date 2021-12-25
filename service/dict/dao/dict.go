@@ -9,7 +9,6 @@ import (
 	"html/template"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/spf13/cast"
 )
@@ -38,7 +37,7 @@ func FindDictById(id string) (dictBO *model.DictBO, err error) {
 		log.Error(err.Error())
 		return
 	}
-	err = cache.Cache().SetWithExpire(ckey, dictBO, 60*time.Second)
+	err = cache.Cache().Set(ckey, dictBO)
 	if err != nil {
 		log.Warn(err.Error())
 		err = nil

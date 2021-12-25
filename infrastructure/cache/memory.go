@@ -21,7 +21,7 @@ func init() {
 	defer mutex.Unlock()
 
 	log.Info("start init gcache")
-	cache = gcache.New(2000).LRU().Expiration(3 * time.Minute).AddedFunc(func(key, value interface{}) {
+	cache = gcache.New(2000).LRU().Expiration(1 * time.Hour).AddedFunc(func(key, value interface{}) {
 		log.Debug(fmt.Sprintf("gcache added key:%s", key))
 	}).EvictedFunc(func(key, value interface{}) {
 		log.Debug(fmt.Sprintf("gcache evicted key:%s", key))

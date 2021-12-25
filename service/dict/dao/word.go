@@ -7,7 +7,6 @@ import (
 	"app/service/dict/db"
 	"app/service/dict/model"
 	"html/template"
-	"time"
 )
 
 func FindRecentWordList(limit int64) (wordBOs []*model.WordBO, err error) {
@@ -49,7 +48,7 @@ func FindWordById(id string) (wordBO *model.WordBO, err error) {
 	if err != nil {
 		return
 	}
-	err = cache.Cache().SetWithExpire(ckey, wordBO, 30*time.Second)
+	err = cache.Cache().Set(ckey, wordBO)
 	if err != nil {
 		log.Warn(err.Error())
 		err = nil
