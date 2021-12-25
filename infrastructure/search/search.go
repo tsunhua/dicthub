@@ -70,18 +70,16 @@ func BulkPushWord(words []*model.Word) {
 			Text: text,
 		}
 
-		// 取含義的前100個字符
-		text = ""
 		if word.Meaning != "" {
 			runes := []rune(word.Meaning)
 			if len(runes) > 20 {
-				runes = runes[:20]
+				runes = runes[:20] // 取含義的前20個字符
 			}
 			text = strings.Join(cc.Convert2All(string(runes)), " ")
-		}
-		plusRecords[index] = &Record{
-			Id:   word.Id,
-			Text: text,
+			plusRecords[index] = &Record{
+				Id:   word.Id,
+				Text: text,
+			}
 		}
 
 	}
@@ -110,9 +108,11 @@ func BulkPushDict(dicts []*model.Dict) {
 		if dict.Desc != "" {
 			text = text + " " + strings.Join(cc.Convert2All(dict.Desc), " ")
 		}
-		plusRecords[index] = &Record{
-			Id:   dict.Id,
-			Text: text,
+		if strings.TrimSpace(text) != "" {
+			plusRecords[index] = &Record{
+				Id:   dict.Id,
+				Text: text,
+			}
 		}
 	}
 	BulkPush(COL_DICTS, BUCKET_GENERAL, records)

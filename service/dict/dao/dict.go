@@ -66,14 +66,14 @@ func dictsToDictBOs(dicts []*model.Dict) (dictBOs []*model.DictBO, err error) {
 	}
 	dictBOs = make([]*model.DictBO, 0, len(dicts))
 
-	for _, word := range dicts {
-		var wordBO *model.DictBO
-		wordBO, err = dictToDictBO(word)
+	for _, dict := range dicts {
+		var dictBO *model.DictBO
+		dictBO, err = dictToDictBO(dict)
 		if err != nil {
 			log.Error(err.Error())
 			break
 		}
-		dictBOs = append(dictBOs, wordBO)
+		dictBOs = append(dictBOs, dictBO)
 	}
 	return
 }

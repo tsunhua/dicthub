@@ -14,6 +14,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const SEARCH_LIMIT = 15
+
 // DICT pages
 
 func HandlePageQueryDict(context *gin.Context) {
@@ -296,14 +298,14 @@ func HandlePageSearchWords(context *gin.Context) {
 	var results, plushResults []string
 	var words []*model.WordBO
 	var err error
-	results, err = search.Query(search.COL_WORDS, search.BUCKET_GENERAL, kw, 10, 0)
+	results, err = search.Query(search.COL_WORDS, search.BUCKET_GENERAL, kw, SEARCH_LIMIT, 0)
 	if err != nil || len(results) == 0 {
 		log.Error(err.Error())
 		context.String(http.StatusNotFound, "words not found")
 		return
 	}
-	if len(results) < 10 {
-		plushResults, err = search.Query(search.COL_WORDS, search.BUCKET_PLUS, kw, 10, 0)
+	if len(results) < SEARCH_LIMIT {
+		plushResults, err = search.Query(search.COL_WORDS, search.BUCKET_PLUS, kw, SEARCH_LIMIT-len(results), 0)
 		if err != nil {
 			log.Error(err.Error())
 		} else {
@@ -346,21 +348,21 @@ func HandlePageSearchDicts(context *gin.Context) {
 		"static/common/head.gohtml",
 		"static/common/footer.gohtml"))
 
-	var results, plushResults []string
+	var results, plusResults []string
 	var dicts []*model.DictBO
 	var err error
-	results, err = search.Query(search.COL_DICTS, search.BUCKET_GENERAL, kw, 10, 0)
+	results, err = search.Query(search.COL_DICTS, search.BUCKET_GENERAL, kw, SEARCH_LIMIT, 0)
 	if err != nil || len(results) == 0 {
 		log.Error(err.Error())
 		context.String(http.StatusNotFound, "dicts not found")
 		return
 	}
-	if len(results) < 10 {
-		plushResults, err = search.Query(search.COL_DICTS, search.BUCKET_PLUS, kw, 10, 0)
+	if len(results) < SEARCH_LIMIT {
+		plusResults, err = search.Query(search.COL_DICTS, search.BUCKET_PLUS, kw, SEARCH_LIMIT-len(results), 0)
 		if err != nil {
 			log.Error(err.Error())
 		} else {
-			results = append(results, plushResults...)
+			results = append(results, plusResults...)
 		}
 	}
 
