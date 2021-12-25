@@ -1,6 +1,7 @@
 package dict
 
 import (
+	"app/infrastructure/cache"
 	"app/infrastructure/log"
 	"app/infrastructure/search"
 	"app/infrastructure/util"
@@ -80,6 +81,10 @@ func HandleAPIUpdateWord(context *gin.Context) {
 	}
 	// 更新搜索引擎數據
 	go search.RefreshWords([]*model.Word{&word})
+	// 移除舊的緩存
+	go func() {
+		cache.Cache().Remove("/word/" + word.Id)
+	}()
 	context.String(http.StatusOK, "update word success")
 }
 
@@ -148,6 +153,10 @@ func HandleAPIUpdateDict(context *gin.Context) {
 	}
 	// 更新搜索引擎數據
 	go search.RefreshDicts([]*model.Dict{&dict})
+	// 移除舊的緩存
+	go func() {
+		cache.Cache().Remove("/dict/" + dict.Id)
+	}()
 	context.String(http.StatusOK, "update word success")
 }
 

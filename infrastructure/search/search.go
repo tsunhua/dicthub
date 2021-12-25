@@ -54,9 +54,9 @@ func RefreshDicts(dicts []*model.Dict) {
 }
 
 func BulkPushWord(words []*model.Word) {
-	records := make([]*Record, len(words))
-	plusRecords := make([]*Record, len(words))
-	for index, word := range words {
+	records := make([]*Record, 0, len(words))
+	plusRecords := make([]*Record, 0, len(words))
+	for _, word := range words {
 		// 同時存入簡繁體
 		text := strings.Join(cc.Convert2All(word.Writing), " ")
 		// 取屬性，並去除聲調符號
@@ -65,10 +65,11 @@ func BulkPushWord(words []*model.Word) {
 				text = text + " " + clearTone(spec.Value)
 			}
 		}
-		records[index] = &Record{
+
+		records = append(records, &Record{
 			Id:   word.Id,
 			Text: text,
-		}
+		})
 
 		if word.Meaning != "" {
 			runes := []rune(word.Meaning)
@@ -76,10 +77,10 @@ func BulkPushWord(words []*model.Word) {
 				runes = runes[:20] // 取含義的前20個字符
 			}
 			text = strings.Join(cc.Convert2All(string(runes)), " ")
-			plusRecords[index] = &Record{
+			plusRecords = append(plusRecords, &Record{
 				Id:   word.Id,
 				Text: text,
-			}
+			})
 		}
 
 	}
@@ -88,15 +89,15 @@ func BulkPushWord(words []*model.Word) {
 }
 
 func BulkPushDict(dicts []*model.Dict) {
-	records := make([]*Record, len(dicts))
-	plusRecords := make([]*Record, len(dicts))
-	for index, dict := range dicts {
+	records := make([]*Record, 0, len(dicts))
+	plusRecords := make([]*Record, 0, len(dicts))
+	for _, dict := range dicts {
 		// 同時存入簡繁體
 		text := strings.Join(cc.Convert2All(dict.Name), " ")
-		records[index] = &Record{
+		records = append(records, &Record{
 			Id:   dict.Id,
 			Text: text,
-		}
+		})
 
 		text = ""
 		// 取辭典標籤
@@ -109,10 +110,10 @@ func BulkPushDict(dicts []*model.Dict) {
 			text = text + " " + strings.Join(cc.Convert2All(dict.Desc), " ")
 		}
 		if strings.TrimSpace(text) != "" {
-			plusRecords[index] = &Record{
+			plusRecords = append(plusRecords, &Record{
 				Id:   dict.Id,
 				Text: text,
-			}
+			})
 		}
 	}
 	BulkPush(COL_DICTS, BUCKET_GENERAL, records)

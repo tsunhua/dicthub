@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"app/infrastructure/cache"
 	"app/infrastructure/log"
 	"app/infrastructure/util"
 	"app/service/dict/db"
@@ -8,6 +9,7 @@ import (
 	"html/template"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/spf13/cast"
 )
@@ -19,11 +21,28 @@ const (
 )
 
 func FindDictById(id string) (dictBO *model.DictBO, err error) {
+	ckey := "/dict/" + id
 	var dict *model.Dict
+	cdict, err := cache.Cache().Get(ckey)
+	if err == nil {
+		dictBO = cdict.(*model.DictBO)
+		return
+	}
+	log.Debug(err.Error())
+
 	if dict, err = db.FindDictById(id); err != nil {
 		return
 	}
 	dictBO, err = dictToDictBO(dict)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	err = cache.Cache().SetWithExpire(ckey, dictBO, 60*time.Second)
+	if err != nil {
+		log.Warn(err.Error())
+		err = nil
+	}
 	return
 }
 
