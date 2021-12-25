@@ -39,10 +39,9 @@ type DB struct {
 }
 
 type Sonic struct {
-	Host   string `yaml:"host"`
-	Port   string `yaml:"port"`
-	Pwd    string `yaml:"pwd"`
-	Repush bool   `yaml:"repush"`
+	Host string `yaml:"host"`
+	Port string `yaml:"port"`
+	Pwd  string `yaml:"pwd"`
 }
 
 type TableConfig struct {

@@ -25,17 +25,18 @@ func init() {
 
 func initMongoOnce() {
 	once.Do(func() {
-		log.Info("start connect mongo")
+		log.Debug("start connect mongo")
 		ctx, cancel := context.WithTimeout(context.Background(), dbConfig.ConnectionTimeout)
 		defer cancel()
 		client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbConfig.URI))
 		if err != nil {
 			mongoInstance.err = err
 			mongoInstance.client = nil
+			log.Error(fmt.Sprintf("cannot connect to mongo, err:%v", mongoInstance.err))
 		} else {
 			mongoInstance.client = client
 		}
-		log.Info(fmt.Sprintf("finish connect mongo, err:%v", mongoInstance.err))
+		log.Debug(fmt.Sprintf("finish connect mongo, err:%v", mongoInstance.err))
 	})
 }
 

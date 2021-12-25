@@ -17,4 +17,3 @@ sonic:
   host: localhost
   port: 1491
   pwd: SecretPassword
-  repush: false

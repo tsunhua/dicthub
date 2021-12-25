@@ -40,7 +40,7 @@ func Convert2All(in string) []string {
 	}
 
 	rz := make([]string, len(all))
-	for k, _ := range all {
+	for k := range all {
 		rz = append(rz, k)
 	}
 	return rz

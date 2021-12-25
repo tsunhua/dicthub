@@ -293,14 +293,22 @@ func HandlePageSearchWords(context *gin.Context) {
 		"static/common/head.gohtml",
 		"static/common/footer.gohtml"))
 
-	var results []string
+	var results, plushResults []string
 	var words []*model.WordBO
 	var err error
-	results, err = search.Query(search.COL_WORDS, kw, 20, 0)
+	results, err = search.Query(search.COL_WORDS, search.BUCKET_GENERAL, kw, 10, 0)
 	if err != nil || len(results) == 0 {
 		log.Error(err.Error())
 		context.String(http.StatusNotFound, "words not found")
 		return
+	}
+	if len(results) < 10 {
+		plushResults, err = search.Query(search.COL_WORDS, search.BUCKET_PLUS, kw, 10, 0)
+		if err != nil {
+			log.Error(err.Error())
+		} else {
+			results = append(results, plushResults...)
+		}
 	}
 
 	words, err = dao.FindManyWordsById(results)
@@ -338,14 +346,22 @@ func HandlePageSearchDicts(context *gin.Context) {
 		"static/common/head.gohtml",
 		"static/common/footer.gohtml"))
 
-	var results []string
+	var results, plushResults []string
 	var dicts []*model.DictBO
 	var err error
-	results, err = search.Query(search.COL_DICTS, kw, 20, 0)
+	results, err = search.Query(search.COL_DICTS, search.BUCKET_GENERAL, kw, 10, 0)
 	if err != nil || len(results) == 0 {
 		log.Error(err.Error())
 		context.String(http.StatusNotFound, "dicts not found")
 		return
+	}
+	if len(results) < 10 {
+		plushResults, err = search.Query(search.COL_DICTS, search.BUCKET_PLUS, kw, 10, 0)
+		if err != nil {
+			log.Error(err.Error())
+		} else {
+			results = append(results, plushResults...)
+		}
 	}
 
 	dicts, err = dao.FindManyDictsById(results)
