@@ -1,0 +1,66 @@
+{{ define "proposal"}}
+    {{ $addWord := .AddWord }}
+    {{ $editWord := .EditWord }}
+    {{/* {{ $addDict := .AddDict }}
+    {{ $editDict := .EditDict }} */}}
+    <!DOCTYPE html>
+    <html lang="zh">
+        {{if $addWord}}
+            {{ template "head" "添加詞條｜提案｜典合網"}}
+        {{else if $editWord}}
+            {{ template "head" "更正詞條｜提案｜典合網"}}
+        {{/* {{else if $addDict}} */}}
+        {{/* {{else if $editDict}} */}}
+        {{end}}
+    <body>
+    <form class="content" id="proposeForm">
+        {{if $addWord}}
+            {{ template "word.add" $addWord }}
+            <div style="display: none">
+                <input type="text" name="kind" value="add_word">
+            </div>
+        {{else if $editWord}}
+            {{ template "word.edit" $editWord }}
+             <div style="display: none">
+                <input type="text" name="kind" value="edit_word">
+            </div>
+        {{end}}
+        <label for="userDiv" class="form-label font-weight-bold">如何聯繫您？</label>
+        <div id="userDiv" class="mb-3 input-group">
+            <input type="text" placeholder="貴姓" class="form-control col-3" id="nameInput" name="applicantName" required>
+            <input type="text" placeholder="電子信箱" class="form-control" id="emailInput" name="applicantEmail" required>
+        </div>
+
+        <div>
+            <button id="submitBtn" type="submit" class="btn btn-primary d-inline-block">提交審核</button>
+            <div class="d-inline-block ml-2 small" style="color: #17a2b8" id="submitTip"></div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">提交成功</h5>
+                    {{/* <button type="button" class="close" data-dismiss="modal" aria-label="Close"> */}}
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                   謝謝您的付出，我們會不定期檢查提案，並通過您提供的電子信箱與您溝通提案內容，請保持聯繫。 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="modalOkBtn">好的</button>
+                </div>
+                </div>
+            </div>
+        </div> 
+    </form>
+    {{ template "title"}}
+    {{ template "footer"}}
+    <script>
+        $('#submitBtn').on('click', propose)
+    </script>
+    </body>
+    </html>
+{{ end }}

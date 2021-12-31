@@ -1,4 +1,5 @@
 {{ define "word"}}
+    {{ $hasPermission := .HasPermission }}
     {{ $words := .Words}}
     <!DOCTYPE html>
     <html>
@@ -24,7 +25,11 @@
                         {{if $word.SourceUrl}}
                             <span class="small">[<a href="{{$word.SourceUrl}}">來源</a>]</span>
                         {{end}}
-                        <span class="small">[<a href="/editor/word?dictId={{$word.Dict.Id}}&wordId={{$word.Id}}">編輯</a>]</span>
+                        {{if $hasPermission}}
+                            <span class="small">[<a href="/editor/word?dictId={{$word.Dict.Id}}&wordId={{$word.Id}}">編輯</a>]</span>
+                        {{else}}
+                            <span class="small">[<a href="/proposal/word?dictId={{$word.Dict.Id}}&wordId={{$word.Id}}">更正</a>]</span>
+                        {{end}}
                         {{ if $word.Specs}}
                             <div class="mt-2">
                                 {{ range $index,$spec :=  $word.Specs }}

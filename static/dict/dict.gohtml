@@ -2,6 +2,7 @@
     {{ $dict := .Dict }}
     {{ $words := .Words }}
     {{ $categoryLinkId := .CategoryLinkId}}
+    {{ $hasPermission := .HasPermission }}
     <!DOCTYPE html>
     <html>
     {{ template "head" list $dict.Name "典合網" | join "｜"}}
@@ -93,13 +94,13 @@
                 {{ else }}
                     <div>
                         <span class="title-item">{{ $dict.Name }}</span>
-                        <span class="small">[<a href="/editor/dict?dictId={{$dict.Id}}">編輯</a>]</span>
-                        <span class="small">[<a href="/editor/word?dictId={{$dict.Id}}">添加條目</a>]</span>
-                        {{/* {{ if $dict.FeedbackEmail }}
-                            <span class="small">
-                                [<a href="mailto:{{$dict.FeedbackEmail}}?subject=請求參與編輯{{$dict.Name}}">參與編輯</a>]
-                            </span>
-                        {{ end}} */}}
+                        {{if $hasPermission}}
+                            <span class="small">[<a href="/editor/dict?dictId={{$dict.Id}}">編輯</a>]</span>
+                            <span class="small">[<a href="/editor/word?dictId={{$dict.Id}}">添加條目</a>]</span>
+                        {{else}}
+                            {{/* <span class="small">[<a href="/proposal/dict?dictId={{$dict.Id}}">更正</a>]</span> */}}
+                            <span class="small">[<a href="/proposal/word?dictId={{$dict.Id}}">添加條目</a>]</span>
+                        {{end}}
                         {{ if $dict.Tags }}
                             <div class="mt-1">
                                 {{ range $dict.Tags}}

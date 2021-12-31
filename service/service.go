@@ -6,6 +6,7 @@ import (
 	"app/infrastructure/log"
 	"app/service/dict"
 	"app/service/home"
+	"app/service/proposal"
 	"app/service/user"
 	"net/http"
 	"time"
@@ -62,6 +63,13 @@ var apis = []api{
 	// search
 	{GET, "/search/dicts", dict.HandlePageSearchDicts},
 	{GET, "/search/words", dict.HandlePageSearchWords}, // ?kw=
+
+	// proposal
+	// {GET, "/proposal/dict",},
+	{GET, "/proposal/word", proposal.HandlePageApplyUpdateWord},
+
+	// proposal api
+	{POST, "api/proposals", proposal.HandleAPIApply},
 }
 
 func Run() {

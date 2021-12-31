@@ -36,6 +36,7 @@ type DB struct {
 	InspirationTable  TableConfig   `yaml:"inspirationTable"`
 	WordTable         TableConfig   `yaml:"wordTable"`
 	DictTable         TableConfig   `yaml:"dictTable"`
+	ProposalTable     TableConfig   `yaml:"proposalTable"`
 }
 
 type Sonic struct {

@@ -19,6 +19,8 @@ type WordBO struct {
 	Completion     *CompletionBO `bson:"completion" json:"completion"`
 	CreateTime     time.Time     `bson:"createTime" json:"createTime"`
 	UpdateTime     time.Time     `bson:"updateTime" json:"updateTime"`
+	Creator        string        `bson:"creater" json:"creater"`   // 創建者郵箱
+	Updators       []string      `bson:"updators" json:"updators"` // 更新者郵箱列表
 }
 
 type DictBO struct {
@@ -28,7 +30,6 @@ type DictBO struct {
 	Cover         string        `bson:"cover" json:"cover"`
 	DescRaw       string        `bson:"desc" json:"descRaw"`
 	Desc          template.HTML `bson:"desc" json:"desc"`
-	Contributor   string        `bson:"contributor" json:"contributor"`
 	FeedbackEmail string        `bson:"feedbackEmail" json:"feedbackEmail"`
 	CatalogTree   []*TreeNodeBO `bson:"catalogTree" json:"catalogTree"`
 	SpecTree      []*TreeNodeBO `bson:"specTree" json:"specTree"`
@@ -36,9 +37,11 @@ type DictBO struct {
 	Tags          []string      `bson:"tags" json:"tags"`
 	CreateTime    time.Time     `bson:"createTime" json:"createTime"`
 	UpdateTime    time.Time     `bson:"updateTime" json:"updateTime"`
+	Creator       string        `bson:"creater" json:"creater"`   // 創建者郵箱
+	Updators      []string      `bson:"updators" json:"updators"` // 更新者郵箱列表
 }
 
-// 場景： 編輯條目（扁平結構即可）、查看辭書（深度優先遍歷）
+// 場景： 編輯條目（扁平結構即可）、查看詞典（深度優先遍歷）
 type TreeNodeBO struct {
 	Id          string `bson:"id" json:"id"`
 	Name        string `bson:"name" json:"name"`

@@ -126,7 +126,6 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 		Cover:         dict.Cover,
 		DescRaw:       dict.Desc,
 		Desc:          template.HTML(util.MdToHtml([]byte(dict.Desc))),
-		Contributor:   dict.Contributor,
 		FeedbackEmail: dict.FeedbackEmail,
 		CatalogTree:   catalogTree,
 		SpecTree:      specTree,
@@ -134,6 +133,8 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 		Tags:          dict.Tags,
 		CreateTime:    dict.CreateTime,
 		UpdateTime:    dict.UpdateTime,
+		Creator:       dict.Creator,
+		Updators:      dict.Updators,
 	}
 	return
 }

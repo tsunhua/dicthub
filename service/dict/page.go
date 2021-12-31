@@ -62,6 +62,7 @@ func HandlePageDict(context *gin.Context) {
 		context.String(http.StatusBadRequest, "id required")
 		return
 	}
+	ok, _ := hasPermission(context)
 	categoryLinkId := context.Param("categoryLinkId")
 	t := template.Must(template.New("dict").Funcs(util.DictHubFuncMap()).ParseFiles("static/dict/dict.gohtml",
 		"static/common/title.gohtml",
@@ -93,10 +94,12 @@ func HandlePageDict(context *gin.Context) {
 		CategoryLinkId string
 		Dict           *model.DictBO
 		Words          []*model.WordBO
+		HasPermission  bool
 	}{
 		CategoryLinkId: categoryLinkId,
 		Dict:           dict,
 		Words:          words,
+		HasPermission:  ok,
 	})
 	if err != nil {
 		log.Error(err.Error())
@@ -176,6 +179,7 @@ func HandlePageWord(context *gin.Context) {
 	writing := context.Param("writing")
 	idTrunc := context.Param("id")
 	log.Debug("writing: " + writing + " id: " + idTrunc)
+	ok, _ := hasPermission(context)
 	if writing == "" {
 		context.String(http.StatusBadRequest, "writing required")
 		return
@@ -208,9 +212,11 @@ func HandlePageWord(context *gin.Context) {
 	}
 
 	err = t.Execute(context.Writer, struct {
-		Words []*model.WordBO
+		Words         []*model.WordBO
+		HasPermission bool
 	}{
-		Words: words,
+		Words:         words,
+		HasPermission: ok,
 	})
 	if err != nil {
 		log.Error(err.Error())

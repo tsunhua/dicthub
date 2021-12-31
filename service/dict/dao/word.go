@@ -182,5 +182,7 @@ func wordToWordBO(word *model.Word) (wordBO *model.WordBO, err error) {
 		},
 		CreateTime: word.CreateTime,
 		UpdateTime: word.UpdateTime,
+		Creator:    word.Creator,
+		Updators:   word.Updators,
 	}, nil
 }
