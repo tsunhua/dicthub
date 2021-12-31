@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"app/infrastructure/cache"
 	"app/infrastructure/log"
 	"app/infrastructure/util"
 	"app/service/dict/db"
@@ -29,13 +30,29 @@ func FindRecentWordList(limit int64) (wordBOs []*model.WordBO, err error) {
 }
 
 func FindWordById(id string) (wordBO *model.WordBO, err error) {
+	ckey := "/word/" + id
 	var word *model.Word
+	cword, err := cache.Cache().Get(ckey)
+	if err == nil {
+		wordBO = cword.(*model.WordBO)
+		return
+	}
+	log.Debug(err.Error())
+
 	word, err = db.FindWordById(id)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
 	wordBO, err = wordToWordBO(word)
+	if err != nil {
+		return
+	}
+	err = cache.Cache().Set(ckey, wordBO)
+	if err != nil {
+		log.Warn(err.Error())
+		err = nil
+	}
 	return
 }
 
@@ -165,5 +182,7 @@ func wordToWordBO(word *model.Word) (wordBO *model.WordBO, err error) {
 		},
 		CreateTime: word.CreateTime,
 		UpdateTime: word.UpdateTime,
+		Creator:    word.Creator,
+		Updators:   word.Updators,
 	}, nil
 }

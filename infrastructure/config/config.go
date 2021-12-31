@@ -36,13 +36,13 @@ type DB struct {
 	InspirationTable  TableConfig   `yaml:"inspirationTable"`
 	WordTable         TableConfig   `yaml:"wordTable"`
 	DictTable         TableConfig   `yaml:"dictTable"`
+	ProposalTable     TableConfig   `yaml:"proposalTable"`
 }
 
 type Sonic struct {
-	Host   string `yaml:"host"`
-	Port   string `yaml:"port"`
-	Pwd    string `yaml:"pwd"`
-	Repush bool   `yaml:"repush"`
+	Host string `yaml:"host"`
+	Port string `yaml:"port"`
+	Pwd  string `yaml:"pwd"`
 }
 
 type TableConfig struct {

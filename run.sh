@@ -6,7 +6,7 @@
 
 cd ~/apps/boat || exit
 
-COMMAND_GO_SERVER=./boat
+COMMAND_GO_SERVER="./boat serve"
 go_server_pid=$(pidof ${COMMAND_GO_SERVER})
 
 stop() {
@@ -17,6 +17,8 @@ stop() {
 start() {
   # 清理和解壓資源
   rm -rf static/
+  rm -rf log/*
+  mkdir log
   unzip static.zip
   nohup $COMMAND_GO_SERVER >./log/boat.log 2>&1 &
   date +"%Y/%m/%d %H:%M:%S-Start completed"

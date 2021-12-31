@@ -1,14 +1,8 @@
 {{ define "word.add"}}
     {{ $dict := .Dict}}
-    {{ $hasPermission := .HasPermission }}
     {{ $completions := .Completions}}
-    <!DOCTYPE html>
-    <html lang="zh">
-    {{ template "head" "添加條目｜典合網"}}
-    <body>
-    {{ if $hasPermission}}
-    <form class="content" id="addWordForm">
-        <div class="title-sub">添加條目</div>
+    <div>
+        <div class="title-sub">提案: 添加條目</div>
         <div style="display: none">
             <input type="text" name="dictId" value="{{$dict.Id}}">
         </div>
@@ -38,7 +32,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="specsInput" class="form-label">屬性 :</label>
+            <label for="specsInput" class="form-label font-weight-bold">屬性 :</label>
             <div id="specsInput">
                 <div class="input-group mb-2">
                     <select class="custom-select" name="linkId" style="max-width: 220px">
@@ -66,8 +60,8 @@
         </div>
 
         <div class="mb-3">
-            <label for="meaningInput" class="form-label">描述<span class="small text-info">（支持<a
-                            href="https://gist.github.com/billy3321/1001749662c370887c63bb30f26c9e6e">Markdown</a>）</span> :</label>
+            <label for="meaningInput" class="form-label font-weight-bold">描述<span class="small text-info">（支持<a
+                            href="https://gist.github.com/billy3321/1001749662c370887c63bb30f26c9e6e">Markdown</a>）</span>:</label>
             <textarea class="form-control" id="meaningInput" rows="3" name="meaning"></textarea>
         </div>
 
@@ -90,25 +84,5 @@
                 {{ end }}
             </div>
         </div>
-
-        <div>
-            <button id="submitBtn" type="submit" class="btn btn-primary d-inline-block">添加</button>
-            <div class="d-inline-block ml-2 small" style="color: #17a2b8" id="submitTip"></div>
-        </div>
-    </form>
-    {{else}}
-        <script type="text/javascript">
-           window.onload = function () {
-                window.location.href = "/login"
-                alert("請先登入系統再進行後續操作")
-            }
-        </script>
-    {{end}}
-    {{ template "title"}}
-    {{ template "footer"}}
-    <script>
-        $('#submitBtn').on('click', addWord)
-    </script>
-    </body>
-    </html>
+    </div>
 {{ end }}

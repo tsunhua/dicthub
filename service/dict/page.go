@@ -14,6 +14,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const SEARCH_LIMIT = 15
+
 // DICT pages
 
 func HandlePageQueryDict(context *gin.Context) {
@@ -60,6 +62,7 @@ func HandlePageDict(context *gin.Context) {
 		context.String(http.StatusBadRequest, "id required")
 		return
 	}
+	ok, _ := hasPermission(context)
 	categoryLinkId := context.Param("categoryLinkId")
 	t := template.Must(template.New("dict").Funcs(util.DictHubFuncMap()).ParseFiles("static/dict/dict.gohtml",
 		"static/common/title.gohtml",
@@ -91,10 +94,12 @@ func HandlePageDict(context *gin.Context) {
 		CategoryLinkId string
 		Dict           *model.DictBO
 		Words          []*model.WordBO
+		HasPermission  bool
 	}{
 		CategoryLinkId: categoryLinkId,
 		Dict:           dict,
 		Words:          words,
+		HasPermission:  ok,
 	})
 	if err != nil {
 		log.Error(err.Error())
@@ -174,6 +179,7 @@ func HandlePageWord(context *gin.Context) {
 	writing := context.Param("writing")
 	idTrunc := context.Param("id")
 	log.Debug("writing: " + writing + " id: " + idTrunc)
+	ok, _ := hasPermission(context)
 	if writing == "" {
 		context.String(http.StatusBadRequest, "writing required")
 		return
@@ -206,9 +212,11 @@ func HandlePageWord(context *gin.Context) {
 	}
 
 	err = t.Execute(context.Writer, struct {
-		Words []*model.WordBO
+		Words         []*model.WordBO
+		HasPermission bool
 	}{
-		Words: words,
+		Words:         words,
+		HasPermission: ok,
 	})
 	if err != nil {
 		log.Error(err.Error())
@@ -293,14 +301,22 @@ func HandlePageSearchWords(context *gin.Context) {
 		"static/common/head.gohtml",
 		"static/common/footer.gohtml"))
 
-	var results []string
+	var results, plushResults []string
 	var words []*model.WordBO
 	var err error
-	results, err = search.Query(search.COL_WORDS, kw, 20, 0)
+	results, err = search.Query(search.COL_WORDS, search.BUCKET_GENERAL, kw, SEARCH_LIMIT, 0)
 	if err != nil || len(results) == 0 {
 		log.Error(err.Error())
 		context.String(http.StatusNotFound, "words not found")
 		return
+	}
+	if len(results) < SEARCH_LIMIT {
+		plushResults, err = search.Query(search.COL_WORDS, search.BUCKET_PLUS, kw, SEARCH_LIMIT-len(results), 0)
+		if err != nil {
+			log.Error(err.Error())
+		} else {
+			results = append(results, plushResults...)
+		}
 	}
 
 	words, err = dao.FindManyWordsById(results)
@@ -338,14 +354,22 @@ func HandlePageSearchDicts(context *gin.Context) {
 		"static/common/head.gohtml",
 		"static/common/footer.gohtml"))
 
-	var results []string
+	var results, plusResults []string
 	var dicts []*model.DictBO
 	var err error
-	results, err = search.Query(search.COL_DICTS, kw, 20, 0)
+	results, err = search.Query(search.COL_DICTS, search.BUCKET_GENERAL, kw, SEARCH_LIMIT, 0)
 	if err != nil || len(results) == 0 {
 		log.Error(err.Error())
 		context.String(http.StatusNotFound, "dicts not found")
 		return
+	}
+	if len(results) < SEARCH_LIMIT {
+		plusResults, err = search.Query(search.COL_DICTS, search.BUCKET_PLUS, kw, SEARCH_LIMIT-len(results), 0)
+		if err != nil {
+			log.Error(err.Error())
+		} else {
+			results = append(results, plusResults...)
+		}
 	}
 
 	dicts, err = dao.FindManyDictsById(results)

@@ -11,7 +11,7 @@ import (
 )
 
 func FindRecentDictList(limit int64, offset int64) (dicts []*model.Dict, err error) {
-	cur, err := getDictTable().Find(context.TODO(), bson.M{},
+	cur, err := getDictTable().Find(context.TODO(), bson.M{"isPublic": true},
 		options.Find().SetSort(bson.M{"updateTime": -1}).SetLimit(limit).SetSkip(offset))
 	if err != nil {
 		return
@@ -93,11 +93,14 @@ func UpdateDict(dict *model.Dict) (err error) {
 	if dict.Tags != nil {
 		update["tags"] = dict.Tags
 	}
-	if dict.CatalogTree != nil {
-		update["catalogTree"] = dict.CatalogTree
+	if dict.CatalogText != "" {
+		update["catalogText"] = dict.CatalogText
 	}
-	if dict.SpecTree != nil {
-		update["specTree"] = dict.SpecTree
+	if dict.SpecText != "" {
+		update["specText"] = dict.SpecText
+	}
+	if dict.PreferSpecLinkIds != nil {
+		update["preferSpecLinkIds"] = dict.PreferSpecLinkIds
 	}
 	_, err = getDictTable().UpdateOne(context.TODO(), bson.M{"id": dict.Id}, bson.M{"$set": update})
 	return
@@ -112,6 +115,10 @@ func getDictTable() *mongo.Collection {
 		{
 			Keys:    bson.M{"id": 1},
 			Options: options.Index().SetUnique(true),
+		},
+		{
+			Keys:    bson.M{"isPublic": 1},
+			Options: options.Index().SetUnique(false),
 		},
 	})
 	if err != nil {

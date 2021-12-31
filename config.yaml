@@ -13,8 +13,9 @@ db:
     name: word
   dictTable:
     name: dict
+  proposalTable:
+    name: proposal
 sonic:
   host: localhost
   port: 1491
   pwd: SecretPassword
-  repush: false

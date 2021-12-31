@@ -2,113 +2,44 @@ package main
 
 import (
 	"app/infrastructure/config"
-	"app/infrastructure/debug"
 	"app/infrastructure/log"
-	"app/service/dict"
-	"app/service/home"
-	"app/service/user"
-	"net/http"
-	"time"
+	"app/infrastructure/search"
+	"app/service"
 
-	"github.com/gin-gonic/gin"
-	"github.com/unrolled/secure"
+	"github.com/spf13/cobra"
 )
-
-type HttpMethod string
-
-const (
-	GET  HttpMethod = "GET"  // read
-	POST HttpMethod = "POST" // update
-	PUT  HttpMethod = "PUT"  // create
-)
-
-type api struct {
-	method  HttpMethod
-	path    string
-	handler gin.HandlerFunc
-}
-
-var apis = []api{
-	{GET, "/ping", home.HandlePagePing},
-	{GET, "/", home.HandlePageIndex},
-
-	// user page
-	{GET, "/login", user.HandlePageLogin},
-
-	// user api
-	{POST, "/api/login", user.HandleAPILogin},
-
-	// dict page
-	{GET, "/dicts", dict.HandlePageQueryDict}, // ?tags=xxx
-	{GET, "/dicts/:id", dict.HandlePageDict},
-	{GET, "/dicts/:id/:categoryLinkId", dict.HandlePageDict},
-
-	{GET, "/words", dict.HandlePageQueryWord},         // word page ?dictId=xxx&catalogLinkId=xxx
-	{GET, "/words/:writing/:id", dict.HandlePageWord}, // word page
-	{GET, "/words/:writing", dict.HandlePageWord},     // word page
-
-	{GET, "/editor/dict", dict.HandlePageEditDict}, // ?dictId=
-	{GET, "/editor/word", dict.HandlePageEditWord}, // ?dictId=&wordId=
-
-	// dict api
-	{GET, "/api/dicts/:id", dict.HandleAPIGetDict},
-	{POST, "/api/dicts", dict.HandleAPICreateDict},
-	{PUT, "/api/dicts/:id", dict.HandleAPIUpdateDict},
-	{GET, "/api/words", dict.HandleAPIGetWord},
-	{GET, "/api/words/:id", dict.HandleAPIGetWord},
-	{POST, "/api/words", dict.HandleAPICreateWord},
-	{PUT, "/api/words/:id", dict.HandleAPIUpdateWord},
-
-	// search
-	{GET, "/search/dicts", dict.HandlePageSearchDicts},
-	{GET, "/search/words", dict.HandlePageSearchWords}, // ?kw=
-}
 
 func main() {
-	debug.PprofRouter()
-	router := gin.Default()
-	for _, item := range apis {
-		router.Handle(string(item.method), item.path, item.handler)
+	var rootCmd = &cobra.Command{Use: config.Get().Name}
+	rootCmd.AddCommand(serveCommand(), sonicCommand())
+	rootCmd.Execute()
+}
+
+func serveCommand() *cobra.Command {
+	return &cobra.Command{
+		Use:   "serve",
+		Short: "Run HTTP Server",
+		Run: func(cmd *cobra.Command, args []string) {
+			service.Run()
+		},
 	}
-	router.Static("css", "./static/css")
-	router.Static("js", "./static/js")
-	router.Static("img", "./static/img")
-	// router.Static("font", "./static/font")
-	router.StaticFile("favicon.ico", "./static/img/favicon.png")
-	router.StaticFile("robots.txt", "./static/robots.txt")
-	router.StaticFile("sitemap.xml", "./static/sitemap.xml")
+}
 
-	server := &http.Server{
-		Addr:           ":80",
-		Handler:        router,
-		IdleTimeout:    3 * time.Minute,
-		ReadTimeout:    20 * time.Second,
-		WriteTimeout:   20 * time.Second,
-		MaxHeaderBytes: 1 << 20,
+func sonicCommand() *cobra.Command {
+	var cmd = &cobra.Command{
+		Use:   "sonic",
+		Short: "Sonic Commands",
 	}
-
-	if config.Get().Domain != "localhost" {
-		secureMiddleware := secure.New(secure.Options{SSLRedirect: true})
-		secureRouter := secureMiddleware.Handler(router)
-		server.Handler = secureRouter
-		secureServer := &http.Server{
-			Addr:           ":443",
-			Handler:        router,
-			IdleTimeout:    3 * time.Minute,
-			ReadTimeout:    20 * time.Second,
-			WriteTimeout:   20 * time.Second,
-			MaxHeaderBytes: 1 << 20,
-		}
-
-		go func() {
-			if err := secureServer.ListenAndServeTLS("server.pem", "server.key"); err != nil {
-				log.Error("run server error", log.String("error", err.Error()))
+	var syncCmd = &cobra.Command{
+		Use:   "sync",
+		Short: "Sync words & dicts to Sonic",
+		Run: func(cmd *cobra.Command, args []string) {
+			err := search.Sync()
+			if err != nil {
+				log.Error(err.Error())
 			}
-		}()
+		},
 	}
-
-	if err := server.ListenAndServe(); err != nil {
-		log.Error("run server error", log.String("error", err.Error()))
-	}
-
+	cmd.AddCommand(syncCmd)
+	return cmd
 }

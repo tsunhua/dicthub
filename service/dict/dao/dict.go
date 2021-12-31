@@ -1,27 +1,47 @@
 package dao
 
 import (
+	"app/infrastructure/cache"
 	"app/infrastructure/log"
 	"app/infrastructure/util"
 	"app/service/dict/db"
 	"app/service/dict/model"
 	"html/template"
+	"regexp"
+	"strings"
 
 	"github.com/spf13/cast"
 )
 
 const (
-	ID_LINKER     = "~"
-	NAME_LINKER   = "·"
+	ID_LINKER     = "."
+	NAME_LINKER   = "/"
 	NUMBER_LINKER = "."
 )
 
 func FindDictById(id string) (dictBO *model.DictBO, err error) {
+	ckey := "/dict/" + id
 	var dict *model.Dict
+	cdict, err := cache.Cache().Get(ckey)
+	if err == nil {
+		dictBO = cdict.(*model.DictBO)
+		return
+	}
+	log.Debug(err.Error())
+
 	if dict, err = db.FindDictById(id); err != nil {
 		return
 	}
 	dictBO, err = dictToDictBO(dict)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	err = cache.Cache().Set(ckey, dictBO)
+	if err != nil {
+		log.Warn(err.Error())
+		err = nil
+	}
 	return
 }
 
@@ -64,14 +84,14 @@ func dictsToDictBOs(dicts []*model.Dict) (dictBOs []*model.DictBO, err error) {
 	}
 	dictBOs = make([]*model.DictBO, 0, len(dicts))
 
-	for _, word := range dicts {
-		var wordBO *model.DictBO
-		wordBO, err = dictToDictBO(word)
+	for _, dict := range dicts {
+		var dictBO *model.DictBO
+		dictBO, err = dictToDictBO(dict)
 		if err != nil {
 			log.Error(err.Error())
 			break
 		}
-		dictBOs = append(dictBOs, wordBO)
+		dictBOs = append(dictBOs, dictBO)
 	}
 	return
 }
@@ -81,13 +101,9 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 		return
 	}
 
-	catalogTree := traversal(dict.CatalogTree, &traversalContext{
-		lastLevel: -1,
-	})()
+	catalogTree := parse2TreeNodeBOs(dict.CatalogText)
 
-	specTree := traversal(dict.SpecTree, &traversalContext{
-		lastLevel: -1,
-	})()
+	specTree := parse2TreeNodeBOs(dict.SpecText)
 
 	var preferSpecs []*model.TreeNodeBO
 	if dict.PreferSpecLinkIds != nil {
@@ -106,10 +122,10 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 	dictBO = &model.DictBO{
 		Id:            dict.Id,
 		Name:          dict.Name,
+		IsPublic:      dict.IsPublic,
 		Cover:         dict.Cover,
 		DescRaw:       dict.Desc,
 		Desc:          template.HTML(util.MdToHtml([]byte(dict.Desc))),
-		Contributor:   dict.Contributor,
 		FeedbackEmail: dict.FeedbackEmail,
 		CatalogTree:   catalogTree,
 		SpecTree:      specTree,
@@ -117,63 +133,83 @@ func dictToDictBO(dict *model.Dict) (dictBO *model.DictBO, err error) {
 		Tags:          dict.Tags,
 		CreateTime:    dict.CreateTime,
 		UpdateTime:    dict.UpdateTime,
+		Creator:       dict.Creator,
+		Updators:      dict.Updators,
 	}
 	return
 }
 
-type traversalContext struct {
-	lastLevel    int
-	lastNumber   string
-	lastLinkId   string
-	lastLinkName string
-}
-
-func traversal(nodes []*model.TreeNode, ctx *traversalContext) func() []*model.TreeNodeBO {
-	var arr = make([]*model.TreeNodeBO, 0, 10)
-	return func() []*model.TreeNodeBO {
-		level := ctx.lastLevel + 1
-		number := ""
-		for index, node := range nodes {
-			linkId := ctx.lastLinkId
-			if linkId == "" {
-				linkId = node.Id
-			} else {
-				linkId = linkId + ID_LINKER + node.Id
-			}
-
-			linkName := ctx.lastLinkName
-			if linkName == "" {
-				linkName = node.Name
-			} else {
-				linkName = linkName + NAME_LINKER + node.Name
-			}
-
-			if ctx.lastNumber == "" {
-				number = cast.ToString(index + 1)
-			} else {
-				number = ctx.lastNumber + NUMBER_LINKER + cast.ToString(index+1)
-			}
-
-			nodeBO := &model.TreeNodeBO{
-				Id:          node.Id,
-				Name:        node.Name,
-				LinkId:      linkId,
-				LinkName:    linkName,
-				Level:       level,
-				IsLastLevel: node.Next == nil,
-				Number:      number,
-			}
-
-			arr = append(arr, nodeBO)
-			if node.Next != nil {
-				arr = append(arr, traversal(node.Next, &traversalContext{
-					lastLinkId:   linkId,
-					lastLinkName: linkName,
-					lastLevel:    level,
-					lastNumber:   number,
-				})()...)
-			}
+func parse2TreeNodeBOs(text string) []*model.TreeNodeBO {
+	lines := strings.Split(text, "\r\n")
+	if len(lines) == 0 {
+		return nil
+	}
+	reg, err := regexp.Compile(`(#*) (.+?)/([^\/]*)/?(.*)?`)
+	if err != nil {
+		return nil
+	}
+	var arr = make([]*model.TreeNodeBO, 0, len(lines))
+	lastLevel := 0
+	lastLinkId := ""
+	lastLinkName := ""
+	lastNumber := ""
+	count := 1
+	for _, line := range lines {
+		strs := reg.FindStringSubmatch(line)
+		if len(strs) < 3 {
+			continue
 		}
+		level := len(strs[1])
+		id := strs[3]
+		name := strs[2]
+		var linkId, linkName, number string
+		switch {
+		case level == lastLevel:
+			lastLinkId = lastLinkId[:strings.LastIndex(lastLinkId, ID_LINKER)]
+			lastLinkName = lastLinkName[:strings.LastIndex(lastLinkName, NAME_LINKER)]
+			count++
+			lastNumber = lastNumber[:strings.LastIndex(lastNumber, NUMBER_LINKER)]
+		case level < lastLevel:
+			lastLinkId = lastLinkId[:strings.LastIndex(lastLinkId, ID_LINKER)]
+			lastLinkId = lastLinkId[:strings.LastIndex(lastLinkId, ID_LINKER)]
+			lastLinkName = lastLinkName[:strings.LastIndex(lastLinkName, NAME_LINKER)]
+			lastLinkName = lastLinkName[:strings.LastIndex(lastLinkName, NAME_LINKER)]
+			lastNumber = lastNumber[:strings.LastIndex(lastNumber, NUMBER_LINKER)]
+			count = cast.ToInt(lastNumber[strings.LastIndex(lastNumber, NUMBER_LINKER)+1:]) + 1
+			lastNumber = lastNumber[:strings.LastIndex(lastNumber, NUMBER_LINKER)]
+		case level > lastLevel:
+			count = 1
+		}
+		linkId = lastLinkId + ID_LINKER + id
+		linkName = lastLinkName + NAME_LINKER + name
+		number = lastNumber + NUMBER_LINKER + cast.ToString(count)
+		arr = append(arr, &model.TreeNodeBO{
+			Level:    level,
+			Name:     name,
+			Id:       id,
+			LinkId:   strings.TrimPrefix(linkId, ID_LINKER),
+			LinkName: strings.TrimPrefix(linkName, NAME_LINKER),
+			Number:   strings.TrimPrefix(number, NUMBER_LINKER),
+		})
+		lastLevel = level
+		lastLinkId = linkId
+		lastLinkName = linkName
+		lastNumber = number
+	}
+
+	if len(arr) == 0 {
 		return arr
 	}
+
+	arr[len(arr)-1].IsLastLevel = true
+	if len(arr) > 1 {
+		lastLevel := arr[len(arr)-1].Level
+		for i := len(arr) - 2; i >= 0; i-- {
+			if arr[i].Level >= lastLevel {
+				arr[i].IsLastLevel = true
+			}
+			lastLevel = arr[i].Level
+		}
+	}
+	return arr
 }
