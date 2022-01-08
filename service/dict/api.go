@@ -11,6 +11,7 @@ import (
 	userModel "app/service/user/model"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
@@ -48,6 +49,19 @@ func HandleAPICreateWord(context *gin.Context) {
 	word.Id = uuid.NewV4().String()
 	word.CreateTime = util.GetCurrentShanghaiTime()
 	word.UpdateTime = word.CreateTime
+	if len(word.CatalogLinkIds) == 1 {
+		items := strings.Split(word.CatalogLinkIds[0], ".")
+		word.CatalogLinkIds = make([]string, 0, len(items))
+		tmp := ""
+		for _, item := range items {
+			if tmp == "" {
+				tmp = item
+			} else {
+				tmp = strings.Join([]string{tmp, item}, ".")
+			}
+			word.CatalogLinkIds = append(word.CatalogLinkIds, tmp)
+		}
+	}
 	err = db.InsertWord(&word)
 	if err != nil {
 		log.Error(err.Error())
@@ -71,6 +85,19 @@ func HandleAPIUpdateWord(context *gin.Context) {
 		log.Error(err.Error())
 		context.String(http.StatusBadRequest, "parse request body fail")
 		return
+	}
+	if len(word.CatalogLinkIds) == 1 {
+		items := strings.Split(word.CatalogLinkIds[0], ".")
+		word.CatalogLinkIds = make([]string, 0, len(items))
+		tmp := ""
+		for _, item := range items {
+			if tmp == "" {
+				tmp = item
+			} else {
+				tmp = strings.Join([]string{tmp, item}, ".")
+			}
+			word.CatalogLinkIds = append(word.CatalogLinkIds, tmp)
+		}
 	}
 	word.UpdateTime = util.GetCurrentShanghaiTime()
 	err = db.UpdateWord(&word)
