@@ -73,7 +73,11 @@
                                         {{ if gt (len $it.Specs) 0}}
                                             {{ range $k,$kt :=  $it.Specs}}
                                                 {{if eq $jt.LinkId $kt.LinkId}}
-                                                    <td>{{$kt.Value}}</td>
+                                                    {{if hasPrefix "http" $kt.Value }}
+                                                        <td><a href="{{$kt.Value}}">{{$kt.Value}}</a></td>
+                                                    {{else}}
+                                                        <td>{{$kt.Value}}</td>
+                                                    {{end}}
                                                 {{else}}
                                                     <td></td>
                                                 {{end}}

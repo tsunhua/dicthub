@@ -35,7 +35,11 @@
                                 {{ range $index,$spec :=  $word.Specs }}
                                     <div class="small">
                                         <span>{{ $spec.LinkName }}:&nbsp;</span>
-                                        <span style="color: gray">{{ $spec.Value }}</span>
+                                        {{if hasPrefix "http" $spec.Value }}
+                                            <span style="color: blue"><a href="{{$spec.Value}}">{{ $spec.Value }}</a></span>
+                                        {{else}}
+                                            <span style="color: gray">{{ $spec.Value }}</span>
+                                        {{end}}
                                         {{if eq $spec.Note ""}}
                                         {{else}}
                                             <span style="color: gray;">({{$spec.Note}})</span>
