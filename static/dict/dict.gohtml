@@ -50,6 +50,11 @@
                                 {{end}}
                             {{ end }}
                         {{end}}
+                        {{if $hasPermission}}
+                            <span class="ml-2">[<a href="/editor/word?dictId={{$dict.Id}}">添加條目</a>]</span>
+                        {{else}}
+                            <span class="ml-2">[<a href="/proposal/word?dictId={{$dict.Id}}">添加條目</a>]</span>
+                        {{end}}
                     </div>
                     <table class="table table-sm table-striped table-bordered">
                          <thead>
