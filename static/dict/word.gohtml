@@ -35,7 +35,7 @@
                                 {{ range $index,$spec :=  $word.Specs }}
                                     <div class="small">
                                         <span>{{ $spec.LinkName }}:&nbsp;</span>
-                                        <span style="color: gray">/{{ $spec.Value }}/</span>
+                                        <span style="color: gray">{{ $spec.Value }}</span>
                                         {{if eq $spec.Note ""}}
                                         {{else}}
                                             <span style="color: gray;">({{$spec.Note}})</span>
