@@ -50,10 +50,11 @@
                                 {{end}}
                             {{ end }}
                         {{end}}
+                        <span class="ml-3 cat-mobile">[<span class="btn-link" onclick="$('#catlogModal').modal()">目錄</span>]</span>
                         {{if $hasPermission}}
-                            <span class="ml-2">[<a href="/editor/word?dictId={{$dict.Id}}">添加條目</a>]</span>
+                            <span class="ml-1">[<a href="/editor/word?dictId={{$dict.Id}}">添加條目</a>]</span>
                         {{else}}
-                            <span class="ml-2">[<a href="/proposal/word?dictId={{$dict.Id}}">添加條目</a>]</span>
+                            <span class="ml-1">[<a href="/proposal/word?dictId={{$dict.Id}}">添加條目</a>]</span>
                         {{end}}
                     </div>
                     <table class="table table-sm table-striped table-bordered">
@@ -103,6 +104,7 @@
                 {{ else }}
                     <div>
                         <span class="title-item">{{ $dict.Name }}</span>
+                        <span class="small cat-mobile">[<span class="btn-link" onclick="$('#catlogModal').modal()">目錄</span>]</span>
                         {{if $hasPermission}}
                             <span class="small">[<a href="/editor/dict?dictId={{$dict.Id}}">編輯</a>]</span>
                             <span class="small">[<a href="/editor/word?dictId={{$dict.Id}}">添加條目</a>]</span>
