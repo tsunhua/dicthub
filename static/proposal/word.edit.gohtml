@@ -9,17 +9,17 @@
 
          <div class="mb-3 form-group row">
             <label for="dictIdDiv" class="col-sm-2 col-form-label font-weight-bold">詞典 :</label>
-            <div id="dictIdDiv" class="d-flex align-items-center"><a href="/dicts/{{$word.Dict.Id}}">{{$word.Dict.Name}}</a>（ID: {{$word.Dict.Id}}）</div>
+            <div id="dictIdDiv" class="col-sm-10 d-flex align-items-center"><a href="/dicts/{{$word.Dict.Id}}">{{$word.Dict.Name}}</a>（ID: {{$word.Dict.Id}}）</div>
         </div>
 
-        <div class="mb-3 form-group row">
-            <label for="writingInput" class="col-sm-2 col-form-label font-weight-bold">條目 :</label>
-            <input type="text" class="col-sm-10 form-control" id="writingInput" name="writing" value="{{$word.Writing}}" required>
+        <div class="mb-3 form-group">
+            <label for="writingInput" class="font-weight-bold">條目 :</label>
+            <input type="text" class="form-control" id="writingInput" name="writing" value="{{$word.Writing}}" required>
         </div>
 
         <div class="mb-3 form-group row">
             <label for="catalogInput" class="col-sm-2 col-form-label font-weight-bold">分類 :</label>
-            <div id="catalogInput">
+            <div id="catalogInput" class="col-sm-10">
                 <select class="custom-select" name="catalogLinkId" style="max-width: 220px">
                     <option value="">請選擇</option>
                     {{ range $word.Dict.CatalogTree}}
@@ -86,7 +86,7 @@
 
         <div class="mb-3 form-group row">
             <label for="completionDiv" class="col-sm-2 col-form-label font-weight-bold">完善程度 :</label>
-            <div id="completionDiv" class="d-flex align-items-center">
+            <div id="completionDiv" class="col-sm-10 d-flex align-items-center">
                 {{ range $index,$item := $completions}}
                     <div class="form-check form-check-inline">
                         {{ if eq $word.Completion.Value $item.Value }}
